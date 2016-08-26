@@ -236,26 +236,30 @@ for (lang in colnames(txt)) {
     ### plot interactive foreigner map ###
     ddd <- cbind(ge.df, fo.df[match(ge.df$BFSNR, fo.df$BFS_NUMMER),] %>% 
       select(-location, -BFS_NUMMER, -foreigners))
-    
+   
+    nats <- c('Italie', 'Allemagne', 'Portugal', 'France', 'Kosovo', 'Espagne', 'Autres')
+    ddd[is.na(ddd)] <- 0
+    max_bar <- 1
     ddd$tip <- paste0(
       '<b>', as.character(ddd$GEMNAME), '</b><br>',
-      '<b>', ddd$pcForeigners * 100, '%</b>, population: ', ddd$population, '<br>',
+      '<b>', ddd$pcForeigners * 100, '%</b>, population: ', ddd$population, '<br><br>',
       '<div class="tipchart">', 
-      '<span class="tipspanstyle">Nationalité des étrangers en %</span>
-  <table>
-    <tr class="tiprow">
-      <td class="tipbarticks">', "Italie", '</td>',
-  '<td class="tipbardiv"><div class="tipbar" style="width:%dpx;">', 
-  ifelse(is.na(ddd$Italie*100), 0, ddd$Italie*100) , '</div></td>
-    </tr>
-    <tr class="tiprow">
-      <td class="tipbarticks">', "Allemagne",'</td>',
-  '<td class="tipbardiv"><div class="tipbar" style="width:%dpx;">',
-  ifelse(is.na(ddd$Allemagne*100), 0, ddd$Allemagne *100), '</div></td>
-    </tr>
-   </table>
-</div>'
-    )
+      '<span class="tipspanstyle">Nationalité des étrangers en %</span><table>'
+      )
+    
+    tiprowize <- function(name, value) {
+      sprintf(
+      '<tr class="tiprow">
+        <td class="tipbarticks">%s</td>
+        <td class="tipbardiv"><div class="tipbar" style="width:%dpx;">%3.1f</div></td>
+      </tr>',
+      name,
+      round((value/(max_bar/1.25)*100)), 
+      value
+      )
+    }
+    trow <- sapply(nats, function(nat) tiprowize(rep(nat, nrow(ddd)), ddd[,nat]))
+    ddd$tip <- paste0(ddd$tip, apply(trow, 1, paste0, "</table></div>", collapse = ""))
     
     ddd$tip <- gsub("'", "_", gsub("\\\n", "", ddd$tip))
     
