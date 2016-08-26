@@ -1,0 +1,161 @@
+---
+title: "00_preparePX_population_data"
+author: "Duc-Quang Nguyen"
+date: "26 August 2016"
+output: html_document
+---
+
+https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=fr&px_db=px-x-0102010000_104&px_tableid=px-x-0102010000_104\px-x-0102010000_104.px&px_type=PX
+
+```{r settings, packages}
+population.file <- 'data/px-x-0102010000_104.px'
+nationalityFR.file <- 'data/px-x-0102010000_104_fr.csv'
+
+
+library(pxR)
+library(tidyr)
+library(dplyr)
+library(magrittr)
+```
+
+```{r load data, packages}
+natfr <- read.csv(nationalityFR.file, sep = "\t", col.names = F, 
+        encoding = "latin1", stringsAsFactors = F) %>% unlist(use.names = F)
+
+px.read <- read.px(population.file)
+data.read  <- as.data.frame( px.read )
+colnames(data.read) <- c('nationality', 'birthLocation', 
+                         'populationType', 'location', 'year', 'value')
+
+# translate nationlity in french
+nat <- levels(data.read$nationality)
+stopifnot(length(natfr) + 1 == length(nat))
+names(nat) <- c('Total', natfr)
+
+idx <- match(data.read$nationality, nat)
+data.read$nationality <- names(nat)[idx]
+
+# filter data
+df <- data.read %>% filter(
+  nationality != 'Total', 
+  birthLocation == "Geburtsort - Total",
+  populationType == "Ständige Wohnbevölkerung",
+  year == "2015"
+) %>% select(nationality, location, value)
+
+# get only commune, starting wiht .....
+df %<>% filter(grepl("^\\.\\.\\.\\.\\.", location))
+# get BFS ID and name in seperate columns
+df$BFS_NUMMER <- as.numeric(gsub("^\\.\\.\\.\\.\\.\\.(\\d+) .*$", "\\1",as.character(df$location)))
+df$location <- as.character(df$location)
+df$location <- gsub("^\\.\\.\\.\\.\\.\\.\\d+ ", "", df$location)
+
+#write.csv(df, "data/PopResidentePerma2015.csv", row.names = F)
+
+### by commune compute % foreigners and the top 6 foreign nationalities
+topN <- df %>% group_by(nationality) %>% summarise(tot = sum(value)) %>% 
+  arrange(desc(tot)) %>% ungroup() %>% head(7) %>%
+  select(nationality) %>% unlist(use.names = F)
+
+ddd <- df %>% group_by(location, BFS_NUMMER) %>%
+  summarise(
+    population   = sum(value),
+    foreigners   = sum(value[nationality != "Suisse"]),
+    pcForeigners = round(sum(foreigners) / population, 3),
+    Italie       = round(sum(value[nationality == "Italie"]) / foreigners, 3),
+    Allemagne    = round(sum(value[nationality == "Allemagne"]) / foreigners, 3),
+    Portugal     = round(sum(value[nationality == "Portugal"]) / foreigners, 3),
+    France       = round(sum(value[nationality == "France"]) / foreigners, 3),
+    Kosovo       = round(sum(value[nationality == "Kosovo"]) / foreigners, 3),
+    Espagne      = round(sum(value[nationality == "Espagne"]) / foreigners, 3),
+    Autres       = round(sum(value[!nationality %in% topN] / foreigners), 3)
+  ) %>% ungroup()
+
+write.csv(ddd, "input/foreignersByMunicipality2015.csv", row.names = F)
+```
+
+
+
+```{r test}
+library(ggplot2)
+library(ggiraph)
+library(scales)
+library(swiMap)
+library(swiTheme)
+library(htmltools)
+library(viridis)
+library(swiRcharts)
+require(rgdal)
+require(rgeos)
+require(maptools)
+
+
+
+## swiss map shapefiles
+path <- getPathShp('CH', 2015)
+path2014 <- getPathShp('CH', 2014)
+
+mu <- spTransform(readOGR(path, layer = "municipalities-without-lakes"),CRS("+init=epsg:4326"))
+mu.df <- formatShp(mu) %>% 
+  select(long, lat, order, hole, id, group, GEMNAME, BFSNR)
+mu.df$id <- as.numeric(mu.df$id)
+
+ca <- spTransform( readOGR(path2014, layer = "cantons"), CRS("+init=epsg:4326"))
+ca.df <- formatShp(ca) %>% select(long, lat, order, hole, id, group, NAME, EINWOHNERZ)
+ca.df$id <- as.numeric(ca.df$id)
+
+la <- spTransform( readOGR(path, layer = "lakes"), CRS("+init=epsg:4326"))
+la.df <- formatShp(la) %>% select(long, lat, order, hole, id, group)
+la.df$id <- as.numeric(la.df$id)
+
+sum( !unique(mu.df$BFSNR) %in% unique(df$BFS_NUMMER))
+
+colourText_bkbg <- '#ffffff'
+border.color <- "#404040"
+
+bk_mapTheme <- function(
+  base_size = 14, base_family = "OpenSans-CondensedLight",
+  title_family = "OpenSans-CondensedBold", subtitle_family = "OpenSans-CondensedLight",
+  bg.colour = '#1a0000', colour = colourText_bkbg
+ ) {
+     swi_theme(
+       y_gridlines = F, base_size = base_size, base_family = base_family, 
+       title_family = title_family, subtitle = subtitle_family
+     ) + 
+    theme(
+      panel.background = element_rect(fill = bg.colour, size = 0),
+      plot.background = element_rect(fill = bg.colour, size = 0),
+      axis.line = element_blank(),
+      axis.ticks = element_blank(), 
+      axis.title = element_blank(), 
+      axis.text = element_blank(),
+      plot.title = element_text(colour = colour), 
+      plot.subtitle = element_text(colour = "white", margin=margin(b=13)),
+      plot.caption = element_text(colour = colour),
+      legend.text = element_text(colour = colourText_bkbg, size = 9.5, hjust = 1),
+      legend.title = element_text(colour = colourText_bkbg, size = 11),
+      # legend.key.width = unit(17, "lines"),
+      # legend.key.height = unit(8, "lines"),
+      legend.position = "top",
+      legend.title.align = 0,
+      plot.margin = unit(c(0.25, 0, 0.1, 0), "cm")
+    ) 
+}
+
+pcFor <- df %>% group_by(location, BFS_NUMMER) %>% 
+  summarise(pcForeigners = sum(value[nationality != "Suisse"] / sum(value, na.rm = T))) %>% 
+  ungroup() 
+
+mu.df$value <- pcFor[match(mu.df$BFSNR, pcFor$BFS_NUMMER), 'pcForeigners']
+
+ggplot(mu.df) + 
+  geom_polygon( aes(x =long, y =lat, group = group, fill = value)) +
+  bk_mapTheme()
+
+gg <- ggplot(mu.df) + 
+  geom_polygon_interactive( 
+    aes(x =long, y =lat, group = group, 
+    fill = value, data_id = BFSNR, tooltip = gsub("'", "_", GEMNAME)), colour = NA) +
+  bk_mapTheme()
+ggiraph(code = {print(gg)})
+```
