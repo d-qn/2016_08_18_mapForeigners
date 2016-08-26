@@ -1,0 +1,14 @@
+code,EN,FR,DE,IT,PT,RU,ES,JA,ZH
+main.title,The six main foreign nationalities in Switzerland,Les 6 principales nationalités étrangères en Suisse,Die sechs wichtigsten ausländischen Nationalitäten in der Schweiz,I sei principali paesi di origine degli stranieri in Svizzera,As seis principais nacionalidades estrangeiras na Suíça,6 основных диаспор в Швейцарии,Las nacionalidades de las seis principales colonias extranjeras en Suiza,,在瑞士生活的六大“外籍人士”
+descr,As a percentage of the permanent resident population (2014); and by municipality,En pourcentage de la population résidente permanente en 2104 et par commune,In Prozent der ständigen Wohnbevölkerung (2014) und nach Gemeinde,In percentuale della popolazione residente permanente (2014) e per comune,Em porcentagem da população residente permanente em 2014 e por comunas (municípios),"Распределение по кантонам и общинам иностранцев, постоянно проживающих в Швейцарии (в %)",Porcentaje de la población con residencia permanente en 2014 por municipios,,占2014年度常住人口百分比
+source,Source: Federal Statistical Office | swissinfo.ch | @duc_qn,Source: Office fédéral de la statistique | swissinfo.ch | @duc_qn,Quelle: Bundesamt für Statistik | swissinfo.ch | @duc_qn,Fonte: Ufficio federale di statistica,Fonte: Secretaria Federal das Estatísticas | swissinfo.ch | @duc_qn,Источник: Федеральное ведомство статистики | swissinfo.ch | @duc_qn,Fuente: Oficina Federal de Estadística  | swissinfo.ch | @duc_qn,,来源：瑞士联邦统计局 | 瑞士资讯swissinfo.ch | @duc_qn
+it,Italy,Italie,Italien,Italia,Itália,Италия,Italia,,意大利 
+de,Germany,Allemagne,Deutschland,Germania,Alemanha,Германия,Alemania,,德国
+po,Portugal,Portugal,Portugal,Portogallo,Portugal,Португалия,Portugal,,葡萄牙
+fr,France,France,Frankreich,Francia,França,Франция,Francia,,法国
+kh,Kosovo,Kosovo,Kosovo,Kosovo,Kosovo,Косово,Kosovo ,,科索沃
+es,Spain,Espagne,Spanien,Spagna,Espanha,Испания,España,,西班牙
+base_family,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,Hiragino Sans W1,PingFang SC Light
+family_title,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,PingFang SC Semibold,PingFang SC Semibold
+subtitle,OpenSans-CondensedLightItalic,OpenSans-CondensedLightItalic,OpenSans-CondensedLightItalic,OpenSans-CondensedLightItalic,OpenSans-CondensedLightItalic,OpenSans-CondensedLightItalic,OpenSans-CondensedLightItalic,PingFang SC Thin,PingFang SC Thin
+title.size,16,16,13,16,16,16,12,16,16

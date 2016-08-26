@@ -1,0 +1,24 @@
+code,EN,FR,DE,IT,PT,AR,RU,ES,JA,ZH
+title1,,Régions linguistiques de Suisse,,,,,,,,
+fr,,Français,,,,,,,,
+defr,,Allemand Français,,,,,,,,
+de,,Allemand,,,,,,,,
+it,,Italien,,,,,,,,
+dero,,Allemand Romanche,,,,,,,,
+title2,Population density by Swiss municipalities,Densité de la population par commune suisse,Bevölkerungsdichte in Schweizer Gemeinden,Densità della popolazione per comune svizzero,Densidade populacional por cidade suíça,الكثافة السكانية بحسب البلديات السويسرية,Плотность населения в Швейцарии (по общинам/муниципалитетам),Densidad de población en cada municipio suizo,自治体別に見た人口密度分布図,瑞士乡镇的人口密度
+descr2,Swiss municipalities coloured according to their population density. The five largest agglomerations and their total population are shown,Les communes suisses sont colorées d'après la densité de leur population. La carte montre les cinq plus grandes agglomérations et leur population totale,Schweizer Gemeinden nach Einwohnerdichte markiert. Die Karte zeigt die fünf grössten Agglomerationen und deren Gesamtbevölkerung.,"I comuni svizzeri sono colorati in base alla
+densità della loro popolazione. La mappa mostra inoltre i cinque principali
+agglomerati e la loro popolazione totale. ",As cidades suíças estão coloridas de acordo com a densidade da população. O mapa mostra as cinco maiores cidades e sua população,تختلف الألوان المميّزة للبلديات بحسب كثافة سكانها. وتظهر الخريطة  أكبر خمس مدن وإجمالي عدد سكانها,Швейцарские общины выделены цветом в соответствии с плотностью их населения. Показаны пять самых плотно заселенных агломераций,El color de los municipios suizos varía según la densidad de población. El mapa muestra además las principales áreas metropolitanas y su población total,自治体ごとの人口密度によって色分けされたスイスの地図。丸で表示されているのは人口密度の高い都市トップ５,瑞士的各乡镇按人口密度着色。地图上显示了瑞士5大城郊居民聚集地区及其总人口数
+popdensity,Inhabitants per square km,Habitants par km2,Einwohner pro km2,Abitanti per km2,Habitantes por km2,Inhabitants per square km,Численность населения на кв. км.,Habitantes por km2,１平方キロメートルごとの人口,每平方公里的居民数
+agglosize,Inhabitants (in thousands),Habitants (en milliers),Einwohner (in tausend),Abitanti (in migliaia),Habitantes (em milhares),Inhabitants (in thousands),Плотность населения (в тыс. чел.),Habitantes (en miles),人口（単位：千人）,居民数(以千计)
+source,Source,source,Quelle,Fonte,fonte,المصدر,Источник,Fuente,出典,来源
+source.name,Federal Statistical Office and swisstopo | swissinfo.ch | @duc_qn,Office fédéral de la statistique et swisstopo  | swissinfo.ch | @duc_qn,Bundesamt für Statistik und swisstopo | swissinfo.ch | @duc_qn,Ufficio federale di statistica e swisstopo | swissinfo.ch | @duc_qn,Secretaria Federal de Estatísticas e Swisstopo | swissinfo.ch | @duc_qn,فليكر، المكتب الفدرالي للإحصاء، المكتب الفدرالي السويسري للطبوغرافيا duc_qn @ I swissinfo.ch I,Федеральное ведомство статистики (BfS) и swisstopo | swissinfo.ch | @duc_qn,Oficina Federal de Estadística y swisstopo | swissinfo.ch | @duc_qn,連邦統計局、swisstopo  | swissinfo.ch | @duc_qn,瑞士联邦统计局及swisstopo | 瑞士资讯swissinfo.ch | @duc_qn
+title3,Top ten municipalities by number of pictures (i.e. the classic places to snap a pic),Les dix communes les plus photographiées du pays,"Die zehn Gemeinden, in denen am meisten Fotos aufgenommen wurden",I dieci luoghi più fotografati della Svizzera,As dez regiões mais fotografadas do país,البلديات العشر الأكثر تصويرا في البلاد,"Десятка швейцарских регионов с самым большим числом фотографий, сделанных на их территории",Los diez municipios más fotografiados del país,スイスで最も多く写真に撮られた地域トップ１０,瑞士上镜率最高的10个地点
+footer3,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,瑞士资讯swissinfo.ch
+Zürich,Zurich,Zurich,Zürich,Zurigo,Zurique,Zurich,Цюрих,Zúrich,チューリヒ,苏黎世
+Bern,Bern,Berne,Bern,Berna,Berna,Bern,Берн,Berna,ベルン,伯尔尼
+Basel,Basel,Bâle,Basel,Basilea,Basileia,Basel,Базель,Basilea,バーゼル,巴塞尔
+Genève,Geneva,Genève,Genf,Ginevra,Genebra,Geneva,Женева,Ginebra,ジュネーブ,日内瓦
+Lausanne,Lausanne,Lausanne,Lausanne,Losanna,Lausanne,Lausanne,Лозанна,Lausana,ローザンヌ,洛桑
+base.font,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,PingFang SC Semibold,PingFang SC Semibold
+title.font,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,Hiragino Sans W1,PingFang SC Light
