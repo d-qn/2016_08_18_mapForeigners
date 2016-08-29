@@ -242,26 +242,12 @@ for (lang in colnames(txt)) {
     max_bar <- 100
     
     ddd$tip <- paste0(
-      '<b>', as.character(ddd$GEMNAME), '</b><br>',
-      '<b>', ddd$pcForeigners * 100, '%</b>, population: ', ddd$population, '<br><br>',
-      '<i>Nationalité des étrangers en %</i><div class="tipchart"><table>'
+      '<b>', as.character(ddd$GEMNAME), '</b><br><hr>',
+      'Etrangers <b>', ddd$pcForeigners * 100, '%</b><br>(',
+      ifelse(ddd$deltaForeigners>0, "+", ""), ddd$deltaForeigners * 100, " point de pourcentage depuis 2010)",
+      '<br>population: ', ddd$population
       )
     
-    tiprowize <- function(name, value) {
-      value <- value * 100
-      sprintf(
-      '<tr class="tiprow">
-        <td class="tipbarticks">%s</td>
-        <td class="tipbardiv"><div class="tipbar" style="width:%dpx;">%3.1f</div></td>
-      </tr>',
-      name,
-      round((value/(max_bar/1.25)*100)), 
-      value
-      )
-    }
-    trow <- sapply(nats, function(nat) tiprowize(rep(nat, nrow(ddd)), ddd[,nat]))
-    ddd$tip <- paste0(ddd$tip, apply(trow, 1, paste0, collapse = ""))
-    ddd$tip <- paste0(ddd$tip, "</table></div>")
     ddd$tip <- gsub("'", "_", gsub("\\\n", "", ddd$tip))
     
     fmap <- ggplot(ddd) + 
@@ -269,7 +255,10 @@ for (lang in colnames(txt)) {
         aes(x =long, y = lat, group = group, 
             fill = pcForeigners, data_id = BFSNR, 
             tooltip = tip), colour = NA
-    ) + 
+    ) + theme(
+      legend.key.width = unit(7, "lines"),
+      legend.key.height = unit(2, "lines")
+    ) +
       bk_mapTheme() +  coord_quickmap(expand = F) + 
     geom_polygon(data = la.df,  aes(x = long, y = lat, group = group),
       size = 0, fill = border.color, colour = border.color
@@ -280,7 +269,7 @@ for (lang in colnames(txt)) {
         direction = 1
     )
     
-    imap <- ggiraph(code = {print(fmap)}, width = "100%", zoom_max = 1)
+    imap <- ggiraph(code = {print(fmap)}, width = "100%", zoom_max = 2)
     
     save_html(
       tags$html(

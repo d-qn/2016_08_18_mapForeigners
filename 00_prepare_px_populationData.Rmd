@@ -34,14 +34,15 @@ names(nat) <- c('Total', natfr)
 
 idx <- match(data.read$nationality, nat)
 data.read$nationality <- names(nat)[idx]
+data.read$year <- as.numeric(as.character(data.read$year))
 
 # filter data
 df <- data.read %>% filter(
   nationality != 'Total', 
   birthLocation == "Geburtsort - Total",
   populationType == "Ständige Wohnbevölkerung",
-  year == "2015"
-) %>% select(nationality, location, value)
+  year %in% range(data.read$year)
+) %>% select(nationality, location, value, year)
 
 # get only commune, starting wiht .....
 df %<>% filter(grepl("^\\.\\.\\.\\.\\.", location))
@@ -52,24 +53,21 @@ df$location <- gsub("^\\.\\.\\.\\.\\.\\.\\d+ ", "", df$location)
 
 #write.csv(df, "data/PopResidentePerma2015.csv", row.names = F)
 
-### by commune compute % foreigners and the top 6 foreign nationalities
-topN <- df %>% group_by(nationality) %>% summarise(tot = sum(value)) %>% 
+### by commune compute % foreigners and the variation in number of foreigners
+topN <- df %>% group_by(nationality, year) %>% summarise(tot = sum(value)) %>% 
   arrange(desc(tot)) %>% ungroup() %>% head(7) %>%
   select(nationality) %>% unlist(use.names = F)
 
-ddd <- df %>% group_by(location, BFS_NUMMER) %>%
+ddd <- df %>% group_by(location, BFS_NUMMER, year) %>%
   summarise(
     population   = sum(value),
     foreigners   = sum(value[nationality != "Suisse"]),
-    pcForeigners = round(sum(foreigners) / population, 3),
-    Italie       = round(sum(value[nationality == "Italie"]) / foreigners, 3),
-    Allemagne    = round(sum(value[nationality == "Allemagne"]) / foreigners, 3),
-    Portugal     = round(sum(value[nationality == "Portugal"]) / foreigners, 3),
-    France       = round(sum(value[nationality == "France"]) / foreigners, 3),
-    Kosovo       = round(sum(value[nationality == "Kosovo"]) / foreigners, 3),
-    Espagne      = round(sum(value[nationality == "Espagne"]) / foreigners, 3),
-    Autres       = round(sum(value[!nationality %in% topN] / foreigners), 3)
+    pcForeigners = round(sum(foreigners) / population, 3)
   ) %>% ungroup()
+
+ddd_2010 <- ddd %>% filter(year == 2010) %>% select(-year)
+ddd %<>% filter(year == 2015) %>% select(-year)
+ddd$deltaForeigners <- ddd$pcForeigners - ddd_2010[match(ddd$BFS_NUMMER, ddd_2010$BFS_NUMMER), 'pcForeigners'] %>% unlist()
 
 write.csv(ddd, "input/foreignersByMunicipality2015.csv", row.names = F)
 ```
