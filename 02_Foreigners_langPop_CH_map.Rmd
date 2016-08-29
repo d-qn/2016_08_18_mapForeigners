@@ -255,11 +255,12 @@ for (lang in colnames(txt)) {
         aes(x =long, y = lat, group = group, 
             fill = pcForeigners, data_id = BFSNR, 
             tooltip = tip), colour = NA
-    ) + theme(
-      legend.key.width = unit(7, "lines"),
-      legend.key.height = unit(2, "lines")
     ) +
-      bk_mapTheme() +  coord_quickmap(expand = F) + 
+      bk_mapTheme() + theme(
+        legend.key.width = unit(3, "lines"),
+        legend.key.height = unit(1, "lines")
+      ) +
+      coord_quickmap(expand = F) + 
     geom_polygon(data = la.df,  aes(x = long, y = lat, group = group),
       size = 0, fill = border.color, colour = border.color
     ) +  
