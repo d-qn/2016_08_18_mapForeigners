@@ -1,0 +1,227 @@
+---
+title: "Dataviz étranger en Suisse"
+author: "Duc-Quang Nguyen"
+date: "29 Aug 2016"
+output: html_document
+---
+
+# Related
+
+* [Press release](http://www.bfs.admin.ch/bfs/portal/fr/index/themen/01/01/new/nip_detail.Document.205535.pdf)
+
+# Data 
+
+* old 2014 [Population résidante permanente et non permanente selon les niveaux géographiques institutionnels, le sexe, la nationalité et l'âge](https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=fr&px_db=px-x-0103010000_101&px_tableid=px-x-0103010000_101\px-x-0103010000_101.px&px_type=PX)
+
+* 2015 [Population résidante permanente et non permanente selon le canton, le sexe, l'autorisation de résidence, la classe d'âge et la nationalité](https://www.pxweb.bfs.admin.ch/DownloadFile.aspx?file=px-x-0103010000_101)
+
+```{r settings}
+loadPXdata <- F
+data.file <- if(loadPXdata) "data/px-x-0103010000_101.px" else "input/0103010000_101_slim.csv"
+
+n.threshold.merge <- 1000
+
+library(pxR)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(swiMap)
+library(countrycode)
+
+library(pipeR)
+library(htmltools)
+library(swiTheme)
+library(swiRcharts)
+library(sunburstR)
+library(htmlwidgets)
+
+```
+
+
+```{r load data}
+# load translations
+txt <- read.csv("input/Sunburst CH foreigners 2015 - Sheet1.csv", row.names = 1, stringsAsFactors = F)
+
+# discard incomplete translations
+cidx <- unique(which(txt =="" | is.na(txt), T)[,2])
+if(length(cidx > 0)) {
+  warning(paste(colnames(txt)[cidx], collapse = "\t"), " languages will be discarded!", "\n")
+  txt <- txt[,-cidx, drop = F]
+}
+colnames(txt)
+
+# load data
+if(loadPXdata) {
+  px.read <- read.px("data/px-x-0103010000_101.px")
+  data.read <- as.data.frame(px.read)
+  #fr.metadata <- px.read[['VALUES.fr.']]
+  en.metadata <- px.read[['VALUES.en.']]
+  
+  # filter data for the latest year, total age, ... keep only nationality and value
+  data.read$Jahr <- as.numeric(as.character(data.read$Jahr))
+  
+  data.read %<>% filter(Jahr ==  max(data.read$Jahr)) %>%
+    filter(Altersklasse ==  "Altersklasse - Total") %>%
+    filter(Anwesenheitsbewilligung == "Anwesenheitsbewilligung - Total") %>%
+    filter(Geschlecht == "Geschlecht - Total") %>%
+    filter(Bevölkerungstyp == "Ständige Wohnbevölkerung") %>%
+    filter(Kanton == "Schweiz") %>%
+    rename(nationality = `Staatsangehörigkeit..Land.`) %>%
+    select(nationality, value)
+    
+  # get the English nationality 
+  nationality <- gsub('\"', '', unlist(strsplit(en.metadata$`Citizenship..Country.`, ",")))
+  # renomve leading blank space
+  nationality <- gsub("^ ?", "", nationality)
+  names(nationality) <- levels(data.read$nationality)
+  # convert nationlity to English
+  data.read$nationality <- nationality[match(data.read$nationality, names(nationality))]
+  
+  # check total and remove total value
+  check.tot <- data.read %>% filter(nationality != 'Citizenship - Total') %>%
+    summarise(sum(value)) %>% unlist()
+  check.tot2 <- data.read %>% filter(nationality == 'Citizenship - Total') %>% unlist()
+  stopifnot(as.numeric(check.tot2[2]) == check.tot)
+  
+  data <- data.read %>% filter(nationality != 'Citizenship - Total')
+  write.csv(data, file = "input/0103010000_101_slim.csv", row.names = F)
+} else {
+  data <- read.csv("input/0103010000_101_slim.csv", stringsAsFactors = F)
+}
+```
+
+```{r wrange & structure data}
+
+# Remove Suisses!
+data <- filter(data, data$nationality != "Switzerland")
+totForeigners <- sum(data$value)
+
+## replace unknow origin by "Inconu"
+data <- data %<>% 
+  mutate(nationality = replace(nationality,
+    nationality %in% c('Stateless', "Not attributable according to current borders", "No indication"),
+    "unknown")) %>% 
+  group_by(nationality) %>% summarise(value = sum(value, na.rm = T)) %>% ungroup()
+stopifnot(sum(data$value) == totForeigners)
+
+# get iso2c and continent
+data$iso2 <- countrycode(data$nationality, "country.name", "iso2c")
+
+data$continent <- countrycode(data$iso2, "iso2c", "continent")
+# hack continent for Taiwnan
+data[which(data$iso2 == "TW"), 'continent'] <- "Asia"
+
+
+## Aggregate unfrequent nationalites to "Other countries"
+hist(data$value, breaks = 1000)
+data[data$value < n.threshold.merge, 'nationality'] %>% unlist(use.name = F) -> countries.sub
+
+
+
+# replace unfrequent country by "autres"
+data %<>% mutate(nationality = replace(nationality, nationality %in% countries.sub, "Other countries"))
+
+# shape the data for plot, recompute total values
+data %<>% group_by(nationality, continent) %>% 
+  summarise(value = sum(value, na.rm = T)) %>% ungroup()
+stopifnot(sum(data$value) == totForeigners)
+data$iso2 <- countrycode(data$nationality, "country.name", "iso2c")
+
+# manual hack for Kosovo
+data[which(is.na(data$continent)),]
+data[which(data$nationality == "Kosovo"), c('continent', 'iso2')] <- c('Europe', 'KH') 
+```
+
+```{r sunburst plot}
+lang <- 'FR'
+
+for(lang in 'FR') {#colnames(txt)) {
+  cat("\n", lang)
+  df <- data
+  
+  df$country <- countryTranslation(df$iso2, lang)[,-1]
+  df[which(df$nationality == "unknown"), 'country'] <- txt['inconnu.country', lang]
+  df[which(df$nationality == "Other countries"), 'country'] <- txt["autrespays.country", lang]
+  stopifnot(!any(is.na(df$country)))
+  
+  df$cont <- txt[paste0(df$continent,".continent"), lang]
+  df[which(df$nationality == "unknown"), 'cont'] <- txt['inconnu.continent', lang]
+  stopifnot(!any(is.na(df$cont)), sum(df$value) == totForeigners)
+  
+  # create the sequence data
+  seqd <- data.frame(
+    sequence = paste(df$cont, gsub("(\\-|\\,)", " ", df$country), sep = "-"), 
+    freq = df$value
+  )
+  
+  schart <- seqd %>>% sunburst(
+    count = T, colors = c(rev(swiTheme::swi_rpal[1:16]),
+    rep(swiTheme::swi_rpal[1:19], 8)), legendOrder = "", height = "570px")
+  
+  # hack
+  schart$sizingPolicy$browser$padding <- 0
+  schart$sizingPolicy$browser$defaultWidth <- "100%"
+  
+  saveWidget(schart, file = "swissForeigners_sunburst_tmp.html", selfcontained = FALSE, libdir = "js")
+ 
+  html.grabbed <- grab_widgetHTML("swissForeigners_sunburst_tmp.html")
+  html.code <- html.grabbed[['html']]
+  istart <- min(grep("script", html.code))
+  iend <- max(grep("</head>", html.code))
+  header <- html.code[istart:iend-1]
+  
+  footer <- paste0(
+    txt['source',lang], ": ", htmlLink("https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=fr&px_db=px-x-0103010000_101&px_tableid=px-x-0103010000_101%5Cpx-x-0103010000_101.px&px_type=PX", 
+    txt['source.name', lang]),
+    " | ",  txt['code', lang], ": ", htmlLink("https://github.com/timelyportfolio/sunburstR", "sunburstR"), " | ",
+    htmlLink("http://www.swissinfo.ch", "swissinfo.ch"), " | ",
+    htmlLink("https://twitter.com/duc_qn", "@duc_qn")
+  )
+  out.file <-  paste0("swissForeigners_sunburst_", lang, ".html")
+  
+  save_html(
+    tags$html(
+      tags$head(HTML(paste0(header, collapse =""))),
+      tags$body(
+        h2(HTML(txt['title', lang])), 
+        div(class = "descr", HTML(paste0(txt['descr', lang], "<br><br>","<i>", txt['descr2', lang], "</i>"))),
+        div(class = "container", HTML(html.code[html.grabbed[['istart']]:html.grabbed[['iend']]])),
+        div(id = "cite", HTML(footer)),
+        HTML(iframeresizer)
+      )), file = out.file, libdir = "js"
+  )
+  # copy sunburst css
+  swi_libWidget_overwrite()
+  
+    
+  # copy my special sunburst with no number abbreviations and no legend
+  original <- list.files("js", "sunburst.js", full.names = T, recursive = T)
+  file.copy( from = list.files(system.file("extdata", package="swiRcharts"),
+    "sunburst_swi.js", full.names = T), to = original, overwrite = T)
+  
+  # remove legend checkbox
+  x <- readLines(out.file)
+  y <- gsub('<div class="sunburst-sidebar">         <input type="checkbox" class="sunburst-togglelegend">Legend</input>         <div class="sunburst-legend" style="visibility:hidden;"></div>       </div>', "", x, fixed = T)
+  cat(y, file = out.file, sep="\n")
+  
+  
+}
+```
+
+
+### Open the HTML files and remove this code (find & replace):
+> <div class="sunburst-sidebar">         <input type="checkbox" class="sunburst-togglelegend">Legend</input>         <div class="sunburst-legend" style="visibility:hidden;"></div>       </div> 
+
+### Repalce sunburst.js in sunburst-binding-0.1: by the edited version. Changes are
+> \+ ' / ' + d3.format("1.2s")(totalSize),
+
+Replaced by 
+
+> d3.format("1.2")(d.value),
+
+To change the formrating inside the sunburst
+
+And decrease the transition time to 400 ms
+
+
