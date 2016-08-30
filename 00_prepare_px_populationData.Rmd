@@ -53,11 +53,6 @@ df$location <- gsub("^\\.\\.\\.\\.\\.\\.\\d+ ", "", df$location)
 
 #write.csv(df, "data/PopResidentePerma2015.csv", row.names = F)
 
-### by commune compute % foreigners and the variation in number of foreigners
-topN <- df %>% group_by(nationality, year) %>% summarise(tot = sum(value)) %>% 
-  arrange(desc(tot)) %>% ungroup() %>% head(7) %>%
-  select(nationality) %>% unlist(use.names = F)
-
 ddd <- df %>% group_by(location, BFS_NUMMER, year) %>%
   summarise(
     population   = sum(value),
@@ -70,90 +65,33 @@ ddd %<>% filter(year == 2015) %>% select(-year)
 ddd$deltaForeigners <- ddd$pcForeigners - ddd_2010[match(ddd$BFS_NUMMER, ddd_2010$BFS_NUMMER), 'pcForeigners'] %>% unlist()
 
 write.csv(ddd, "input/foreignersByMunicipality2015.csv", row.names = F)
+
+
+
+
+### Write the data.fram with the top 8 most frequent foreigner nationalites
+### by commune compute % foreigners and the variation in number of foreigners
+topN <- df %>% filter(year == max(df$year)) %>% 
+  group_by(nationality) %>% summarise(tot = sum(value)) %>% 
+  arrange(desc(tot)) %>% ungroup() %>% head(9) %>%
+  select(nationality) %>% unlist(use.names = F)
+topF <- topN[topN != "Suisse"]
+
+dn <- df %>% filter(year == max(df$year)) %>%
+  group_by(BFS_NUMMER, location) %>%
+  summarise(
+    populationTot = sum(value, na.rm = T),
+    Italie = sum(value[nationality == "Italie"]),
+    Allemagne = sum(value[nationality == "Allemagne"]),
+    Portugal = sum(value[nationality == "Portugal"]),
+    France = sum(value[nationality == "France"]),
+    Kosovo = sum(value[nationality == "Kosovo"]),
+    Espagne = sum(value[nationality == "Espagne"]),
+    Serbie = sum(value[nationality == "Serbie"]),
+    Turquie = sum(value[nationality == "Turquie"])
+  ) %>% ungroup()
+  
+write.csv(dn, "input/top8foreignersNationalityByMunicipality2015.csv", row.names = F)
 ```
 
 
-
-```{r test}
-library(ggplot2)
-library(ggiraph)
-library(scales)
-library(swiMap)
-library(swiTheme)
-library(htmltools)
-library(viridis)
-library(swiRcharts)
-require(rgdal)
-require(rgeos)
-require(maptools)
-
-
-
-## swiss map shapefiles
-path <- getPathShp('CH', 2015)
-path2014 <- getPathShp('CH', 2014)
-
-mu <- spTransform(readOGR(path, layer = "municipalities-without-lakes"),CRS("+init=epsg:4326"))
-mu.df <- formatShp(mu) %>% 
-  select(long, lat, order, hole, id, group, GEMNAME, BFSNR)
-mu.df$id <- as.numeric(mu.df$id)
-
-ca <- spTransform( readOGR(path2014, layer = "cantons"), CRS("+init=epsg:4326"))
-ca.df <- formatShp(ca) %>% select(long, lat, order, hole, id, group, NAME, EINWOHNERZ)
-ca.df$id <- as.numeric(ca.df$id)
-
-la <- spTransform( readOGR(path, layer = "lakes"), CRS("+init=epsg:4326"))
-la.df <- formatShp(la) %>% select(long, lat, order, hole, id, group)
-la.df$id <- as.numeric(la.df$id)
-
-sum( !unique(mu.df$BFSNR) %in% unique(df$BFS_NUMMER))
-
-colourText_bkbg <- '#ffffff'
-border.color <- "#404040"
-
-bk_mapTheme <- function(
-  base_size = 14, base_family = "OpenSans-CondensedLight",
-  title_family = "OpenSans-CondensedBold", subtitle_family = "OpenSans-CondensedLight",
-  bg.colour = '#1a0000', colour = colourText_bkbg
- ) {
-     swi_theme(
-       y_gridlines = F, base_size = base_size, base_family = base_family, 
-       title_family = title_family, subtitle = subtitle_family
-     ) + 
-    theme(
-      panel.background = element_rect(fill = bg.colour, size = 0),
-      plot.background = element_rect(fill = bg.colour, size = 0),
-      axis.line = element_blank(),
-      axis.ticks = element_blank(), 
-      axis.title = element_blank(), 
-      axis.text = element_blank(),
-      plot.title = element_text(colour = colour), 
-      plot.subtitle = element_text(colour = "white", margin=margin(b=13)),
-      plot.caption = element_text(colour = colour),
-      legend.text = element_text(colour = colourText_bkbg, size = 9.5, hjust = 1),
-      legend.title = element_text(colour = colourText_bkbg, size = 11),
-      # legend.key.width = unit(17, "lines"),
-      # legend.key.height = unit(8, "lines"),
-      legend.position = "top",
-      legend.title.align = 0,
-      plot.margin = unit(c(0.25, 0, 0.1, 0), "cm")
-    ) 
-}
-
-pcFor <- df %>% group_by(location, BFS_NUMMER) %>% 
-  summarise(pcForeigners = sum(value[nationality != "Suisse"] / sum(value, na.rm = T))) %>% 
-  ungroup() 
-
-mu.df$value <- pcFor[match(mu.df$BFSNR, pcFor$BFS_NUMMER), 'pcForeigners']
-
-ggplot(mu.df) + 
-  geom_polygon( aes(x =long, y =lat, group = group, fill = value)) +
-  bk_mapTheme()
-
-gg <- ggplot(mu.df) + 
-  geom_polygon_interactive( 
-    aes(x =long, y =lat, group = group, 
-    fill = value, data_id = BFSNR, tooltip = gsub("'", "_", GEMNAME)), colour = NA) +
-  bk_mapTheme()
-ggiraph(code = {print(gg)})
-```

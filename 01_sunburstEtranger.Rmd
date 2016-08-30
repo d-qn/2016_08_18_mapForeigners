@@ -114,10 +114,8 @@ data[which(data$iso2 == "TW"), 'continent'] <- "Asia"
 
 
 ## Aggregate unfrequent nationalites to "Other countries"
-hist(data$value, breaks = 1000)
+#hist(data$value, breaks = 1000)
 data[data$value < n.threshold.merge, 'nationality'] %>% unlist(use.name = F) -> countries.sub
-
-
 
 # replace unfrequent country by "autres"
 data %<>% mutate(nationality = replace(nationality, nationality %in% countries.sub, "Other countries"))
@@ -130,7 +128,7 @@ data$iso2 <- countrycode(data$nationality, "country.name", "iso2c")
 
 # manual hack for Kosovo
 data[which(is.na(data$continent)),]
-data[which(data$nationality == "Kosovo"), c('continent', 'iso2')] <- c('Europe', 'KH') 
+data[which(data$nationality == "Kosovo"), c('continent', 'iso2')] <- c('Europe', 'XK') 
 ```
 
 ```{r sunburst plot}
@@ -140,9 +138,11 @@ for(lang in 'FR') {#colnames(txt)) {
   cat("\n", lang)
   df <- data
   
+  ## get translations country & continent
   df$country <- countryTranslation(df$iso2, lang)[,-1]
   df[which(df$nationality == "unknown"), 'country'] <- txt['inconnu.country', lang]
   df[which(df$nationality == "Other countries"), 'country'] <- txt["autrespays.country", lang]
+  df[which(df$nationality == "Kosovo"), 'country'] <- txt["Kosovo.country", lang]
   stopifnot(!any(is.na(df$country)))
   
   df$cont <- txt[paste0(df$continent,".continent"), lang]
@@ -157,7 +157,7 @@ for(lang in 'FR') {#colnames(txt)) {
   
   schart <- seqd %>>% sunburst(
     count = T, colors = c(rev(swiTheme::swi_rpal[1:16]),
-    rep(swiTheme::swi_rpal[1:19], 8)), legendOrder = "", height = "570px")
+    rep(swiTheme::swi_rpal[1:19], 8)), legendOrder = "", height = "530px")
   
   # hack
   schart$sizingPolicy$browser$padding <- 0
@@ -185,9 +185,10 @@ for(lang in 'FR') {#colnames(txt)) {
       tags$head(HTML(paste0(header, collapse =""))),
       tags$body(
         h2(HTML(txt['title', lang])), 
-        div(class = "descr", HTML(paste0(txt['descr', lang], "<br><br>","<i>", txt['descr2', lang], "</i>"))),
+        div(class = "descr", HTML(paste0(txt['descr', lang], ' &nbsp; &nbsp; <img src="Interactive_icon.svg.png" width="20" align="top">'))),
+        #div(class = "descr", HTML(paste0(txt['descr', lang], "<br><br>","<i>", txt['descr2', lang], '</i>'))),
         div(class = "container", HTML(html.code[html.grabbed[['istart']]:html.grabbed[['iend']]])),
-        div(id = "cite", HTML(footer)),
+        div(id = "cite", HTML(paste0("<br>", footer))),
         HTML(iframeresizer)
       )), file = out.file, libdir = "js"
   )
@@ -205,7 +206,10 @@ for(lang in 'FR') {#colnames(txt)) {
   y <- gsub('<div class="sunburst-sidebar">         <input type="checkbox" class="sunburst-togglelegend">Legend</input>         <div class="sunburst-legend" style="visibility:hidden;"></div>       </div>', "", x, fixed = T)
   cat(y, file = out.file, sep="\n")
   
-  
+  # move stuff
+  fileToMove <- c(out.file)
+  file.copy(from = fileToMove, to = paste0("output/"), overwrite = T)
+    
 }
 ```
 

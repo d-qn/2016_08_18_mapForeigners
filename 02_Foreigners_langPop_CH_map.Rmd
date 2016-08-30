@@ -10,9 +10,12 @@ output:
 ---
 
 ```{r settings}
-translation.file <- "input/map language and population density - Sheet1.csv"
+translation.file <- "input/Map foreigners, language and population density - Sheet1.csv"
+
 
 foreigner.file <- 'input/foreignersByMunicipality2015.csv'
+topForeignerNat.file <- 'input/top8foreignersNationalityByMunicipality2015.csv'
+
 district.file <- "input/districtCH_map.csv"
 language.file <- "input/languages.csv"
 cities.file <- "input/cities.csv"
@@ -54,6 +57,13 @@ colnames(txt)
 
 
 fo.df <- read.csv(foreigner.file)
+topFo.df <- read.csv(topForeignerNat.file)
+topFo.df %<>% select(-Kosovo, -Espagne, -Serbie, -Turquie)
+# compute the pc
+topFo.df$Italie <- topFo.df$Italie / topFo.df$populationTot
+topFo.df$Allemagne <- topFo.df$Allemagne / topFo.df$populationTot    
+topFo.df$Portugal <- topFo.df$Portugal / topFo.df$populationTot
+topFo.df$France <- topFo.df$France / topFo.df$populationTot   
 
 di.df <- read.csv(district.file)
 langRegions <- read.csv(language.file) %>% rename (lang = x)
@@ -112,48 +122,136 @@ bk_mapTheme <- function(
       plot.title = element_text(colour = colour), 
       plot.subtitle = element_text(colour = "white", margin=margin(b=13)),
       plot.caption = element_text(colour = colour),
-      legend.text = element_text(colour = colourText_bkbg, size = 9.5, hjust = 1),
-      legend.title = element_text(colour = colourText_bkbg, size = 11),
-      legend.key.width = unit(17, "lines"),
-      legend.key.height = unit(8, "lines"),
+      legend.text = element_text(colour = colourText_bkbg, size = 11, hjust = 1),
+      legend.title = element_text(colour = colourText_bkbg, size = 12.5),
+      legend.key.width = unit(19, "lines"),
+      legend.key.height = unit(10, "lines"),
       legend.position = "top",
       legend.title.align = 0,
+      strip.text = element_text(family = title_family, colour = "#ffe6e6", size = 14),
       plot.margin = unit(c(0.25, 0, 0.1, 0), "cm")
     ) 
 }
 ```
 
-```{r map language}
-
+```{r map by language}
 lang <- 'FR'
-for (lang in colnames(txt)) {
 
+for (lang in colnames(txt)) {
+  cat("\n\n", lang)
+  
+  bTheme <- function() {
+    bk_mapTheme(base_family = txt['base.font', lang], title_family = txt['title.font', lang], subtitle_family = txt['base.font', lang])
+  }
+  
   # duplicate data for tranlsations
   largeAgglo <- cities
-  ddd <- di.df
-  # get translations
+  # get translations for large agglos and languages regions
   largeAgglo$label <- txt[c('Zürich', 'Genève', 'Basel', 'Bern', 'Lausanne'), lang]
-  langLabel <- factor(
-             paste0(" ", txt[c('de', 'fr', 'it', 'defr', 'dero'), lang], "  "),
-    levels = paste0(" ", txt[c('de', 'fr', 'it', 'defr', 'dero'), lang], "  ")
-    )
-  names(langLabel) <- c('Allemand','Français', 'Italien', 
-                         'Allemand Français', 'Allemand Romanche')
-  ddd$lang <- langLabel[match(ddd$lang, names(langLabel))]
  
-  #### language map
-  lmap <- ggplot() + 
-  geom_polygon(data = ddd,
+  
+  ###########   1 interactive foreigner map ###############
+  ddd <- cbind(ge.df, fo.df[match(ge.df$BFSNR, fo.df$BFS_NUMMER),] %>% 
+                 select(-location, -BFS_NUMMER, -foreigners))
+  ddd$pcForeigners <- ddd$pcForeigners * 100
+  
+  ddd$tip <- paste0(
+    '<h4>', as.character(ddd$GEMNAME), '</h4><div class="tp">', txt['for.tp', lang], 
+    ' <b>', ddd$pcForeigners, '%</b><br>(',
+    ifelse(ddd$deltaForeigners>0, "+", ""), signif(ddd$deltaForeigners, 3) * 100, 
+    " ", txt['pc.tp', lang], ")",
+    '<br>', txt['pop.tp', lang], ': ', ddd$population
+  )
+  ddd$tip <- gsub("'", "_", gsub("\\\n", "", ddd$tip))
+  
+  fmap <- ggplot(ddd) + 
+    geom_polygon_interactive( 
+      aes(x =long, y = lat, group = group, 
+          fill = pcForeigners, data_id = BFSNR, 
+          tooltip = tip), colour = NA
+    ) +
+    bTheme() + theme(
+      legend.key.width = unit(3, "lines"),
+      legend.key.height = unit(1, "lines")
+    ) +
+    coord_quickmap(expand = F) + 
+    geom_polygon(data = la.df,  aes(x = long, y = lat, group = group),
+                 size = 0, fill = border.color, colour = border.color
+    ) +  
+    scale_fill_viridis(
+      name = paste0(txt['for.leg', lang], "  "),
+      direction = 1
+    ) + 
+    geom_point(
+      data = largeAgglo,
+      aes(x = lon, y = lat, group = 1, size = pop),         
+      alpha = 0.6, colour = colourText_bkbg, shape = 1
+    ) + 
+    scale_size(range = c(3,7), name = paste0(txt['agglosize', lang], "  ")) + 
+    geom_text(
+      data = largeAgglo,
+      aes(x = lon, y = lat, group = 1, label = label),
+      alpha = 0.6,
+      family = txt['base.font', lang],
+      colour = colourText_bkbg,
+      nudge_y = -0.082,
+      size = 4.2
+    ) 
+  tooltip_css <- "background-color:#333333;padding:0px;margin:0px;border-radius:5px;"
+  
+  imap <- ggiraph(
+    code = {print(fmap)}, 
+    width = "100%", 
+    zoom_max = 1.8, 
+    tooltip_extra_css = tooltip_css,
+    fontname_sans = 'Open Sans Condensed'
+  )
+  
+  ############ 2 small multiple map of top 4 foreign nationality
+  topFo.df %<>% 
+    gather(nationality, value, -BFS_NUMMER, -location, -populationTot) %>% 
+    select(-populationTot)
+  
+  # duplicate each ge.df by foreign nationality
+  ddd <- do.call(rbind, lapply(unique(topFo.df$nationality), function(nat) {
+    left_join(ge.df, topFo.df %>% filter(nationality == nat) %>% select(-location) %>% rename(BFSNR = BFS_NUMMER))
+  }))
+  ddd <- ddd[!is.na(ddd$value),]
+  # get nationality translations
+  nat4 <- structure(c("Italie", "Allemagne", "Portugal", "France"), names = txt[c("it.nat","de.nat","po.nat","fr.nat"), lang])
+  ddd$nationality <- factor(names(nat4)[match(ddd$nationality, nat4)], levels= names(nat4))
+  ddd$value <- ddd$value * 100
+  
+  map.f4 <- ggplot(ddd, aes(x = long, y = lat, group = group)) +
+    facet_wrap( ~ nationality, ncol = 2) +
+    geom_polygon(aes(fill = value), colour = "white", size = 0) +
+    scale_fill_viridis(discrete = F, option = "A", direction = -1, name="%") +
+    coord_quickmap() + bTheme() 
+    
+  
+  
+  ############# 3 language map #### 
+  ddd <- di.df
+  langLabel <- factor(
+    paste0(" ", txt[c('de', 'fr', 'it', 'defr', 'dero'), lang], "  "),
+    levels = paste0(" ", txt[c('de', 'fr', 'it', 'defr', 'dero'), lang], "  ")
+  )
+  names(langLabel) <- c('Allemand','Français', 'Italien', 
+                        'Allemand Français', 'Allemand Romanche')
+  ddd$lang <- langLabel[match(ddd$lang, names(langLabel))]
+  
+  lmap <- ggplot(data = ddd) + 
+  geom_polygon(
     aes(x = long, y = lat, fill = lang, group = group), 
     colour = NA, size = 0, linetype = 0) +
-  coord_quickmap(expand = F) + bk_mapTheme() +
+  coord_quickmap(expand = F) + bTheme() +
   geom_polygon(
     data = la.df,  aes(x = long, y = lat, group = group),
     size = 0, fill = border.color, colour = border.color) + 
   scale_fill_manual(name = "",
     values = c('#ab3d3f', '#366096', '#3a9736', '#336666', '#ac673e'))
 
-  lmap <- lmap <- lmap + geom_point(data = largeAgglo,
+  map.lang <- lmap <- lmap + geom_point(data = largeAgglo,
       aes(x = lon, y = lat, size = pop, group = 1),         
       alpha = 0.85, colour = colourText_bkbg, shape = 1
     ) + 
@@ -164,7 +262,7 @@ for (lang in colnames(txt)) {
       colour = colourText_bkbg,
       nudge_y = -0.082,
       size = 4.2
-    )  + scale_size(name = txt['agglosize', lang], range = c(3,7)) +
+    )  + scale_size(name = txt['agglosize', lang], range = c(3,7), guide = F) +
     geom_text(
       data = largeAgglo,
       aes(x = lon, y = lat, group = 1, label = label),
@@ -175,18 +273,13 @@ for (lang in colnames(txt)) {
     ) 
   
   
-  ### density population map ###
+  #### 2 density population map ####
   ddd <- mu.df
   ddd$densityPop <- densityPop[match(ddd$BFS_NUMMER, densityPop$OFSKey), 'PopByKm2']
   # hack to put the 0.05 quantile densityPop for NA densityPop muni
   ddd[which(is.na(ddd$densityPop) & !is.na(ddd$EINWOHNERZ)), 'densityPop'] <- quantile(densityPop[,1], 0.05)
   
-  map2 <- ggplot(co.df) + 
-    bk_mapTheme(
-      base_family = txt['base.font', lang], 
-      title_family = txt['title.font', lang], 
-      subtitle_family = txt['base.font', lang]
-    ) +
+  map.pop <- ggplot(co.df) + bTheme() +
     coord_quickmap(expand = F) + 
     geom_polygon(
       aes(x = long, y = lat, group = group), 
@@ -220,73 +313,61 @@ for (lang in colnames(txt)) {
       size = 4.2
     ) 
 
-    map1.path <- paste0("01_map_lang_" , lang, ".png")
-    map2.path <- paste0("01_map_pop_" , lang, ".png")      
-    html.outfile <- paste0("01_map_langPopForeigners_", lang, ".html")
+  
+  ### Write the non-interactive map as images
+  
+    map1.path <- paste0("output/map_top4Foreigners_" , lang, ".png")
+    map2.path <- paste0("output/map_lang_" , lang, ".png")
+    map3.path <- paste0("output/map_pop_" , lang, ".png")      
+
+    html1.outfile <- paste0("map_1_Foreigners_2015_", lang, ".html")
+    html2.outfile <- paste0("map_2_Foreigners_langPop_2015_", lang, ".html")
     
-    png(map1.path,  res = 200, pointsize = 1, height = 1070 * 1.1, 
+    png(map1.path,  res = 200, pointsize = 1, height = 950 * 1.1, 
         width = 1100 * 1.1, bg = '#1a0000')
-    print(lmap)
-    dev.off()     
-    png(map2.path,  res = 200, pointsize = 1, height = 970 * 1.1, 
-        width = 1100 * 1.1, bg = '#1a0000')
-    print(map2)
+    print(map.f4)
     dev.off()   
+        
+    png(map2.path,  res = 200, pointsize = 1, height = 800 * 1.1, 
+        width = 1100 * 1.1, bg = '#1a0000')
+    print(map.lang)
+    dev.off()
     
-    ### plot interactive foreigner map ###
-    ddd <- cbind(ge.df, fo.df[match(ge.df$BFSNR, fo.df$BFS_NUMMER),] %>% 
-      select(-location, -BFS_NUMMER, -foreigners))
-   
-    nats <- c('Italie', 'Allemagne', 'Portugal', 'France', 'Kosovo', 'Espagne', 'Autres')
-    ddd[is.na(ddd)] <- 0
-    max_bar <- 100
-    
-    ddd$tip <- paste0(
-      '<b>', as.character(ddd$GEMNAME), '</b><br><hr>',
-      'Etrangers <b>', ddd$pcForeigners * 100, '%</b><br>(',
-      ifelse(ddd$deltaForeigners>0, "+", ""), ddd$deltaForeigners * 100, " point de pourcentage depuis 2010)",
-      '<br>population: ', ddd$population
-      )
-    
-    ddd$tip <- gsub("'", "_", gsub("\\\n", "", ddd$tip))
-    
-    fmap <- ggplot(ddd) + 
-      geom_polygon_interactive( 
-        aes(x =long, y = lat, group = group, 
-            fill = pcForeigners, data_id = BFSNR, 
-            tooltip = tip), colour = NA
-    ) +
-      bk_mapTheme() + theme(
-        legend.key.width = unit(3, "lines"),
-        legend.key.height = unit(1, "lines")
-      ) +
-      coord_quickmap(expand = F) + 
-    geom_polygon(data = la.df,  aes(x = long, y = lat, group = group),
-      size = 0, fill = border.color, colour = border.color
-    ) +  
-      scale_fill_viridis(
-       # name = paste0(txt['popdensity', lang], "  "),
-      #  labels = as.character(c(10^0, 10^1, 10^2, 10^3, 10^4)),
-        direction = 1
-    )
-    
-    imap <- ggiraph(code = {print(fmap)}, width = "100%", zoom_max = 2)
+    png(map3.path,  res = 200, pointsize = 1, height = 800 * 1.1, 
+        width = 1100 * 1.1, bg = '#1a0000')
+    print(map.pop)
+    dev.off()   
     
     save_html(
       tags$html(
         tags$head(includeHTML("styles.html")),
         tags$body(    
-          # h2(txt["main.title", lang]),
-          # div(class = "descr", HTML(txt["subtitle1", lang])),
-          # h3(txt["h3", lang]),
-          div(class="container",
-              div(class="graphic", imap)
-          ),
-          # div(id = "footer", HTML(txt["caption", lang])),
-          # div(id = "cite", HTML(footer)),
+          h2(txt["title1", lang]),
+          div(class = "descr", HTML(paste0(txt["descr1", lang],  '&nbsp; &nbsp; <img src="Interactive_icon.svg.png" width="23" align="top">'))),
+          div(class="container", imap),
           HTML(iframeresizer)  
-        )), file = paste0("test_supermap.html")
+        )), file = html1.outfile, libdir = "js", background = '#1a0000'
     )
+    
+    save_html(
+      tags$html(
+        tags$head(includeHTML("styles.html")),
+        tags$body(    
+          h2(txt["title2", lang]),
+          div(class = "descr", HTML(txt["descr2", lang])),
+          div(img(src = basename(map1.path), width= "100%")),
+          h3(txt["title3", lang]),
+          div(img(src = basename(map2.path), width= "100%")),
+          h3(txt["title4", lang]),
+          div(class = "descr", HTML(txt["descr4", lang])),
+          div(img(src = basename(map3.path), width= "100%")),
+          HTML(iframeresizer)  
+        )), file = html2.outfile, libdir = "js", background = '#1a0000'
+    )
+    
+    # move stuff
+    fileToMove <- c(html1.outfile, html2.outfile, "js")
+    file.rename(from = fileToMove, to = paste0("output/", fileToMove))
      
 }
 

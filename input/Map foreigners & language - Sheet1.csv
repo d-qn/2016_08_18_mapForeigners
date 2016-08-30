@@ -1,0 +1,30 @@
+code,EN,FR,DE,IT,PT,AR,RU,ES,JA,ZH
+title1,,Population étrangère en Suisse,,,,,,,,
+descr1,,Les communes sont colorées d'après la proportion d'étrangers en 2015. ,,,,,,,,
+for.tp,,Etrangers,,,,,,,,
+pc.tp,,point de pourcentage depuis 2010,,,,,,,,
+pop.tp,,Population,,,,,,,,
+for.leg,,% étrangers,,,,,,,,
+agglosize,Inhabitants (in thousands),Habitants (en milliers),Einwohner (in tausend),Abitanti (in migliaia),Habitantes (em milhares),Inhabitants (in thousands),Плотность населения (в тыс. чел.),Habitantes (en miles),人口（単位：千人）,居民数(以千计)
+Zürich,Zurich,Zurich,Zürich,Zurigo,Zurique,Zurich,Цюрих,Zúrich,チューリヒ,苏黎世
+Bern,Bern,Berne,Bern,Berna,Berna,Bern,Берн,Berna,ベルン,伯尔尼
+Basel,Basel,Bâle,Basel,Basilea,Basileia,Basel,Базель,Basilea,バーゼル,巴塞尔
+Genève,Geneva,Genève,Genf,Ginevra,Genebra,Geneva,Женева,Ginebra,ジュネーブ,日内瓦
+Lausanne,Lausanne,Lausanne,Lausanne,Losanna,Lausanne,Lausanne,Лозанна,Lausana,ローザンヌ,洛桑
+title2,,Les 4 principales nationalités étrangères en Suisse,,,,,,,,
+descr2,,En pourcentage de la population résidente permanente en 2015 et par commune. Ces 4 nationalités représentent la moitié (49%) de tous les étrangers en Suisse. ,,,,,,,,
+it.nat,Italy,Italie,Italien,Italia,Itália,Италия,Italia,,意大利 ,
+de.nat,Germany,Allemagne,Deutschland,Germania,Alemanha,Германия,Alemania,,德国,
+po.nat,Portugal,Portugal,Portugal,Portogallo,Portugal,Португалия,Portugal,,葡萄牙,
+fr.nat,France,France,Frankreich,Francia,França,Франция,Francia,,法国,
+title3,,Régions linguistiques de Suisse,,,,,,,,
+fr,,Français,,,,,,,,
+defr,,Allemand Français,,,,,,,,
+de,,Allemand,,,,,,,,
+it,,Italien,,,,,,,,
+dero,,Allemand Romanche,,,,,,,,
+source,Source,source,Quelle,Fonte,fonte,المصدر,Источник,Fuente,出典,来源
+source.name,Federal Statistical Office and swisstopo | swissinfo.ch,Office fédéral de la statistique et swisstopo  | swissinfo.ch ,Bundesamt für Statistik und swisstopo | swissinfo.ch ,Ufficio federale di statistica e swisstopo | swissinfo.ch | @duc_qn,Secretaria Federal de Estatísticas e Swisstopo | swissinfo.ch ,فليكر، المكتب الفدرالي للإحصاء، المكتب الفدرالي السويسري للطبوغرافيا duc_qn @ I swissinfo.ch I,Федеральное ведомство статистики (BfS) и swisstopo | swissinfo.ch | @duc_qn,Oficina Federal de Estadística y swisstopo | swissinfo.ch ,連邦統計局、swisstopo  | swissinfo.ch ,瑞士联邦统计局及swisstopo | 瑞士资讯swissinfo.ch 
+footer3,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,swissinfo.ch,瑞士资讯swissinfo.ch
+base.font,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,PingFang SC Semibold,PingFang SC Semibold
+title.font,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,Hiragino Sans W1,PingFang SC Light
