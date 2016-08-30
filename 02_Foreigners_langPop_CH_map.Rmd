@@ -10,7 +10,7 @@ output:
 ---
 
 ```{r settings}
-translation.file <- "input/Map foreigners, language and population density - Sheet1.csv"
+translation.file <- "input/Map foreigners & language - Sheet1.csv"
 
 
 foreigner.file <- 'input/foreignersByMunicipality2015.csv'
@@ -19,7 +19,6 @@ topForeignerNat.file <- 'input/top8foreignersNationalityByMunicipality2015.csv'
 district.file <- "input/districtCH_map.csv"
 language.file <- "input/languages.csv"
 cities.file <- "input/cities.csv"
-densityPop.file <- "input/swissPopDensity.csv"
 
 colourText_bkbg <- '#ffffff'
 border.color <- "#404040"
@@ -72,15 +71,9 @@ di.df <- cbind(di.df, langRegions)
 
 ## cities
 cities <- read_csv(cities.file) %>% rename(pop = size)
-densityPop <- read.csv(densityPop.file)
 
 ## swiss map shapefiles
 path <- getPathShp('CH', 2014)
-
-mu <- spTransform(readOGR(path, layer = "municipalities"), CRS("+init=epsg:4326"))
-mu.df <- formatShp(mu) %>% 
-  select(long, lat, order, hole, id, group, NAME, EINWOHNERZ, BFS_NUMMER)
-mu.df$id <- as.numeric(mu.df$id)
 
 # laod also 2015 municipality shapefiles
 ge <- spTransform(readOGR( getPathShp('CH', 2015), layer = "municipalities"), CRS("+init=epsg:4326"))
@@ -272,53 +265,10 @@ for (lang in colnames(txt)) {
       size = 4.2
     ) 
   
-  
-  #### 2 density population map ####
-  ddd <- mu.df
-  ddd$densityPop <- densityPop[match(ddd$BFS_NUMMER, densityPop$OFSKey), 'PopByKm2']
-  # hack to put the 0.05 quantile densityPop for NA densityPop muni
-  ddd[which(is.na(ddd$densityPop) & !is.na(ddd$EINWOHNERZ)), 'densityPop'] <- quantile(densityPop[,1], 0.05)
-  
-  map.pop <- ggplot(co.df) + bTheme() +
-    coord_quickmap(expand = F) + 
-    geom_polygon(
-      aes(x = long, y = lat, group = group), 
-      size = 0.2, alpha = 0, color = border.color
-    ) + 
-    geom_polygon(
-      data = ddd , 
-      aes(x = long, y = lat, group = group, fill = log10(densityPop)), 
-      size = 0) + 
-    geom_polygon(
-      data = la.df,  aes(x = long, y = lat, group = group),
-      size = 0, fill = border.color, colour = border.color
-    ) +  
-    scale_fill_viridis(
-      name = paste0(txt['popdensity', lang], "  "),
-      labels = as.character(c(10^0, 10^1, 10^2, 10^3, 10^4)),
-      discrete = F, option="A", direction = 1
-    ) + 
-    geom_point(
-      data = largeAgglo,
-      aes(x = lon, y = lat, group = 1, size = pop),         
-      alpha = 0.85, colour = colourText_bkbg, shape = 1
-    ) + 
-    scale_size(range = c(3,7), guide = F) + 
-    geom_text(
-      data = largeAgglo,
-      aes(x = lon, y = lat, group = 1, label = label),
-      family = txt['base.font', lang],
-      colour = colourText_bkbg,
-      nudge_y = -0.082,
-      size = 4.2
-    ) 
-
-  
   ### Write the non-interactive map as images
   
     map1.path <- paste0("output/map_top4Foreigners_" , lang, ".png")
     map2.path <- paste0("output/map_lang_" , lang, ".png")
-    map3.path <- paste0("output/map_pop_" , lang, ".png")      
 
     html1.outfile <- paste0("map_1_Foreigners_2015_", lang, ".html")
     html2.outfile <- paste0("map_2_Foreigners_langPop_2015_", lang, ".html")
@@ -332,11 +282,6 @@ for (lang in colnames(txt)) {
         width = 1100 * 1.1, bg = '#1a0000')
     print(map.lang)
     dev.off()
-    
-    png(map3.path,  res = 200, pointsize = 1, height = 800 * 1.1, 
-        width = 1100 * 1.1, bg = '#1a0000')
-    print(map.pop)
-    dev.off()   
     
     save_html(
       tags$html(
@@ -358,9 +303,6 @@ for (lang in colnames(txt)) {
           div(img(src = basename(map1.path), width= "100%")),
           h3(txt["title3", lang]),
           div(img(src = basename(map2.path), width= "100%")),
-          h3(txt["title4", lang]),
-          div(class = "descr", HTML(txt["descr4", lang])),
-          div(img(src = basename(map3.path), width= "100%")),
           HTML(iframeresizer)  
         )), file = html2.outfile, libdir = "js", background = '#1a0000'
     )

@@ -195,9 +195,10 @@ cidx &lt;- unique(which(txt ==&quot;&quot; | is.na(txt), T)[,2])
 if(length(cidx &gt; 0)) {
   warning(paste(colnames(txt)[cidx], collapse = &quot;\t&quot;), &quot; languages will be discarded!&quot;, &quot;\n&quot;)
   txt &lt;- txt[,-cidx, drop = F]
-}
-colnames(txt)</code></pre>
-<pre><code>##  [1] &quot;EN&quot; &quot;FR&quot; &quot;DE&quot; &quot;IT&quot; &quot;PT&quot; &quot;AR&quot; &quot;RU&quot; &quot;ES&quot; &quot;JA&quot; &quot;ZH&quot;</code></pre>
+}</code></pre>
+<pre><code>## Warning: EN  DE  IT  PT  AR  RU  ES  JA  ZH languages will be discarded!</code></pre>
+<pre class="r"><code>colnames(txt)</code></pre>
+<pre><code>## [1] &quot;FR&quot;</code></pre>
 <pre class="r"><code># load data
 if(loadPXdata) {
   px.read &lt;- read.px(&quot;data/px-x-0103010000_101.px&quot;)
