@@ -283,6 +283,8 @@ for (lang in colnames(txt)) {
     print(map.lang)
     dev.off()
     
+    footer <- paste0(txt['source', lang], ": ", txt['source.name', lang])
+    
     save_html(
       tags$html(
         tags$head(includeHTML("styles.html")),
@@ -303,6 +305,7 @@ for (lang in colnames(txt)) {
           div(img(src = basename(map1.path), width= "100%")),
           h3(txt["title3", lang]),
           div(img(src = basename(map2.path), width= "100%")),
+          div(id = "cite", HTML(footer)),
           HTML(iframeresizer)  
         )), file = html2.outfile, libdir = "js", background = '#1a0000'
     )

@@ -188,7 +188,7 @@ for(lang in 'FR') {#colnames(txt)) {
         div(class = "descr", HTML(paste0(txt['descr', lang], ' &nbsp; &nbsp; <img src="Interactive_icon.svg.png" width="20" align="top">'))),
         #div(class = "descr", HTML(paste0(txt['descr', lang], "<br><br>","<i>", txt['descr2', lang], '</i>'))),
         div(class = "container", HTML(html.code[html.grabbed[['istart']]:html.grabbed[['iend']]])),
-        div(id = "cite", HTML(paste0("<br>", footer))),
+        div(id = "cite", HTML(footer)),
         HTML(iframeresizer)
       )), file = out.file, libdir = "js"
   )

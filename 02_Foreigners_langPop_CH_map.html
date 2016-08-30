@@ -289,6 +289,8 @@ for (lang in colnames(txt)) {
     print(map.lang)
     dev.off()
     
+    footer &lt;- paste0(txt['source', lang], &quot;: &quot;, txt['source.name', lang])
+    
     save_html(
       tags$html(
         tags$head(includeHTML(&quot;styles.html&quot;)),
@@ -309,6 +311,7 @@ for (lang in colnames(txt)) {
           div(img(src = basename(map1.path), width= &quot;100%&quot;)),
           h3(txt[&quot;title3&quot;, lang]),
           div(img(src = basename(map2.path), width= &quot;100%&quot;)),
+          div(id = &quot;cite&quot;, HTML(footer)),
           HTML(iframeresizer)  
         )), file = html2.outfile, libdir = &quot;js&quot;, background = '#1a0000'
     )

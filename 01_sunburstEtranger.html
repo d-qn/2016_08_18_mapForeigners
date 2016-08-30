@@ -334,7 +334,7 @@ for(lang in 'FR') {#colnames(txt)) {
         div(class = &quot;descr&quot;, HTML(paste0(txt['descr', lang], ' &amp;nbsp; &amp;nbsp; &lt;img src=&quot;Interactive_icon.svg.png&quot; width=&quot;20&quot; align=&quot;top&quot;&gt;'))),
         #div(class = &quot;descr&quot;, HTML(paste0(txt['descr', lang], &quot;&lt;br&gt;&lt;br&gt;&quot;,&quot;&lt;i&gt;&quot;, txt['descr2', lang], '&lt;/i&gt;'))),
         div(class = &quot;container&quot;, HTML(html.code[html.grabbed[['istart']]:html.grabbed[['iend']]])),
-        div(id = &quot;cite&quot;, HTML(paste0(&quot;&lt;br&gt;&quot;, footer))),
+        div(id = &quot;cite&quot;, HTML(footer)),
         HTML(iframeresizer)
       )), file = out.file, libdir = &quot;js&quot;
   )
@@ -359,10 +359,6 @@ for(lang in 'FR') {#colnames(txt)) {
 }</code></pre>
 <pre><code>## 
 ##  FR</code></pre>
-<pre><code>## Warning in file.create(to[okay]): cannot create file './js/sequences-0.1',
-## reason 'Is a directory'</code></pre>
-<pre><code>## Warning in file.create(to[okay]): cannot create file './output/js/
-## sequences-0.1', reason 'Is a directory'</code></pre>
 <div id="open-the-html-files-and-remove-this-code-find-replace" class="section level3">
 <h3>Open the HTML files and remove this code (find &amp; replace):</h3>
 <blockquote>
