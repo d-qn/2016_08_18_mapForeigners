@@ -149,12 +149,12 @@ for (lang in colnames(txt)) {
   ddd$pcForeigners <- ddd$pcForeigners * 100
   
   ddd$tip <- paste0(
-    '<h4>', as.character(ddd$GEMNAME), '</h4><div class="tp">',
-    '<i><small>', ddd$canton, '</i></small><br><br>',
+    '<h4>', as.character(ddd$GEMNAME), '</h4><div class="tpsubtitle">',
+    ddd$canton, '</div><div class = "tp">',
     txt['for.tp', lang], ' <b>', ddd$pcForeigners, '%</b><br>(',
     ifelse(ddd$deltaForeigners>0, "+", ""), signif(ddd$deltaForeigners, 3) * 100, 
     " ", txt['pc.tp', lang], ")",
-    '<br>', txt['pop.tp', lang], ': ', ddd$population
+    '<br>', txt['pop.tp', lang], ': ', ddd$population, '</div>'
   )
   ddd$tip <- gsub("'", "_", gsub("\\\n", "", ddd$tip))
   

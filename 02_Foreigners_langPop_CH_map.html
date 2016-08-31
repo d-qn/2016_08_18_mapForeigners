@@ -155,12 +155,12 @@ for (lang in colnames(txt)) {
   ddd$pcForeigners &lt;- ddd$pcForeigners * 100
   
   ddd$tip &lt;- paste0(
-    '&lt;h4&gt;', as.character(ddd$GEMNAME), '&lt;/h4&gt;&lt;div class=&quot;tp&quot;&gt;',
-    '&lt;i&gt;&lt;small&gt;', ddd$canton, '&lt;/i&gt;&lt;/small&gt;&lt;br&gt;&lt;br&gt;',
+    '&lt;h4&gt;', as.character(ddd$GEMNAME), '&lt;/h4&gt;&lt;div class=&quot;tpsubtitle&quot;&gt;',
+    ddd$canton, '&lt;/div&gt;&lt;div class = &quot;tp&quot;&gt;',
     txt['for.tp', lang], ' &lt;b&gt;', ddd$pcForeigners, '%&lt;/b&gt;&lt;br&gt;(',
     ifelse(ddd$deltaForeigners&gt;0, &quot;+&quot;, &quot;&quot;), signif(ddd$deltaForeigners, 3) * 100, 
     &quot; &quot;, txt['pc.tp', lang], &quot;)&quot;,
-    '&lt;br&gt;', txt['pop.tp', lang], ': ', ddd$population
+    '&lt;br&gt;', txt['pop.tp', lang], ': ', ddd$population, '&lt;/div&gt;'
   )
   ddd$tip &lt;- gsub(&quot;'&quot;, &quot;_&quot;, gsub(&quot;\\\n&quot;, &quot;&quot;, ddd$tip))
   
