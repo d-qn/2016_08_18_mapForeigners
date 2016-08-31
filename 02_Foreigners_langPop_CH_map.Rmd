@@ -128,7 +128,7 @@ bk_mapTheme <- function(
 ```
 
 ```{r map by language}
-lang <- 'FR'
+lang <- 'DE'
 
 for (lang in colnames(txt)) {
   cat("\n\n", lang)
@@ -136,7 +136,6 @@ for (lang in colnames(txt)) {
   bTheme <- function() {
     bk_mapTheme(base_family = txt['base.font', lang], title_family = txt['title.font', lang], subtitle_family = txt['base.font', lang])
   }
-  
   # duplicate data for tranlsations
   largeAgglo <- cities
   # get translations for large agglos and languages regions
@@ -174,7 +173,7 @@ for (lang in colnames(txt)) {
     ) +  
     scale_fill_viridis(
       name = paste0(txt['for.leg', lang], "  "),
-      direction = 1
+      direction = -1
     ) + 
     geom_point(
       data = largeAgglo,
@@ -185,7 +184,7 @@ for (lang in colnames(txt)) {
     geom_text(
       data = largeAgglo,
       aes(x = lon, y = lat, group = 1, label = label),
-      alpha = 0.6,
+      alpha = 0.75,
       family = txt['base.font', lang],
       colour = colourText_bkbg,
       nudge_y = -0.082,
@@ -196,19 +195,19 @@ for (lang in colnames(txt)) {
   imap <- ggiraph(
     code = {print(fmap)}, 
     width = "100%", 
-    zoom_max = 1.8, 
+    zoom_max = 3, 
     tooltip_extra_css = tooltip_css,
     fontname_sans = 'Open Sans Condensed'
   )
   
   ############ 2 small multiple map of top 4 foreign nationality
-  topFo.df %<>% 
+  ddd <- topFo.df %>% 
     gather(nationality, value, -BFS_NUMMER, -location, -populationTot) %>% 
     select(-populationTot)
   
   # duplicate each ge.df by foreign nationality
-  ddd <- do.call(rbind, lapply(unique(topFo.df$nationality), function(nat) {
-    left_join(ge.df, topFo.df %>% filter(nationality == nat) %>% select(-location) %>% rename(BFSNR = BFS_NUMMER))
+  ddd <- do.call(rbind, lapply(unique(ddd$nationality), function(nat) {
+    left_join(ge.df, ddd %>% filter(nationality == nat) %>% select(-location) %>% rename(BFSNR = BFS_NUMMER))
   }))
   ddd <- ddd[!is.na(ddd$value),]
   # get nationality translations
@@ -222,8 +221,6 @@ for (lang in colnames(txt)) {
     scale_fill_viridis(discrete = F, option = "A", direction = -1, name="%") +
     coord_quickmap() + bTheme() 
     
-  
-  
   ############# 3 language map #### 
   ddd <- di.df
   langLabel <- factor(
@@ -233,6 +230,8 @@ for (lang in colnames(txt)) {
   names(langLabel) <- c('Allemand','Français', 'Italien', 
                         'Allemand Français', 'Allemand Romanche')
   ddd$lang <- langLabel[match(ddd$lang, names(langLabel))]
+  # hack for Bienne/Biel
+  ddd[ddd$districtName == "Verwaltungskreis Biel/Bienne",'lang'] <- langLabel[4]
   
   lmap <- ggplot(data = ddd) + 
   geom_polygon(
@@ -243,7 +242,7 @@ for (lang in colnames(txt)) {
     data = la.df,  aes(x = long, y = lat, group = group),
     size = 0, fill = border.color, colour = border.color) + 
   scale_fill_manual(name = "",
-    values = c('#ab3d3f', '#366096', '#3a9736', '#336666', '#ac673e'))
+    values = c('#ab3d3f', '#366096', '#3a9736', '#996699', '#ac673e'))
 
   map.lang <- lmap <- lmap + geom_point(data = largeAgglo,
       aes(x = lon, y = lat, size = pop, group = 1),         

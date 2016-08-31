@@ -134,7 +134,7 @@ cities.file &lt;- &quot;input/cities.csv&quot;
 
 colourText_bkbg &lt;- '#ffffff'
 border.color &lt;- &quot;#404040&quot;</code></pre>
-<pre class="r"><code>lang &lt;- 'FR'
+<pre class="r"><code>lang &lt;- 'DE'
 
 for (lang in colnames(txt)) {
   cat(&quot;\n\n&quot;, lang)
@@ -142,7 +142,6 @@ for (lang in colnames(txt)) {
   bTheme &lt;- function() {
     bk_mapTheme(base_family = txt['base.font', lang], title_family = txt['title.font', lang], subtitle_family = txt['base.font', lang])
   }
-  
   # duplicate data for tranlsations
   largeAgglo &lt;- cities
   # get translations for large agglos and languages regions
@@ -180,7 +179,7 @@ for (lang in colnames(txt)) {
     ) +  
     scale_fill_viridis(
       name = paste0(txt['for.leg', lang], &quot;  &quot;),
-      direction = 1
+      direction = -1
     ) + 
     geom_point(
       data = largeAgglo,
@@ -191,7 +190,7 @@ for (lang in colnames(txt)) {
     geom_text(
       data = largeAgglo,
       aes(x = lon, y = lat, group = 1, label = label),
-      alpha = 0.6,
+      alpha = 0.75,
       family = txt['base.font', lang],
       colour = colourText_bkbg,
       nudge_y = -0.082,
@@ -202,19 +201,19 @@ for (lang in colnames(txt)) {
   imap &lt;- ggiraph(
     code = {print(fmap)}, 
     width = &quot;100%&quot;, 
-    zoom_max = 1.8, 
+    zoom_max = 3, 
     tooltip_extra_css = tooltip_css,
     fontname_sans = 'Open Sans Condensed'
   )
   
   ############ 2 small multiple map of top 4 foreign nationality
-  topFo.df %&lt;&gt;% 
+  ddd &lt;- topFo.df %&gt;% 
     gather(nationality, value, -BFS_NUMMER, -location, -populationTot) %&gt;% 
     select(-populationTot)
   
   # duplicate each ge.df by foreign nationality
-  ddd &lt;- do.call(rbind, lapply(unique(topFo.df$nationality), function(nat) {
-    left_join(ge.df, topFo.df %&gt;% filter(nationality == nat) %&gt;% select(-location) %&gt;% rename(BFSNR = BFS_NUMMER))
+  ddd &lt;- do.call(rbind, lapply(unique(ddd$nationality), function(nat) {
+    left_join(ge.df, ddd %&gt;% filter(nationality == nat) %&gt;% select(-location) %&gt;% rename(BFSNR = BFS_NUMMER))
   }))
   ddd &lt;- ddd[!is.na(ddd$value),]
   # get nationality translations
@@ -228,8 +227,6 @@ for (lang in colnames(txt)) {
     scale_fill_viridis(discrete = F, option = &quot;A&quot;, direction = -1, name=&quot;%&quot;) +
     coord_quickmap() + bTheme() 
     
-  
-  
   ############# 3 language map #### 
   ddd &lt;- di.df
   langLabel &lt;- factor(
@@ -239,6 +236,8 @@ for (lang in colnames(txt)) {
   names(langLabel) &lt;- c('Allemand','Français', 'Italien', 
                         'Allemand Français', 'Allemand Romanche')
   ddd$lang &lt;- langLabel[match(ddd$lang, names(langLabel))]
+  # hack for Bienne/Biel
+  ddd[ddd$districtName == &quot;Verwaltungskreis Biel/Bienne&quot;,'lang'] &lt;- langLabel[4]
   
   lmap &lt;- ggplot(data = ddd) + 
   geom_polygon(
@@ -249,7 +248,7 @@ for (lang in colnames(txt)) {
     data = la.df,  aes(x = long, y = lat, group = group),
     size = 0, fill = border.color, colour = border.color) + 
   scale_fill_manual(name = &quot;&quot;,
-    values = c('#ab3d3f', '#366096', '#3a9736', '#336666', '#ac673e'))
+    values = c('#ab3d3f', '#366096', '#3a9736', '#996699', '#ac673e'))
 
   map.lang &lt;- lmap &lt;- lmap + geom_point(data = largeAgglo,
       aes(x = lon, y = lat, size = pop, group = 1),         
@@ -324,8 +323,68 @@ for (lang in colnames(txt)) {
 }</code></pre>
 <pre><code>## 
 ## 
-##  FR</code></pre>
+##  EN</code></pre>
 <pre><code>## Warning: package 'gdtools' was built under R version 3.2.3</code></pre>
+<pre><code>## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;</code></pre>
+<pre><code>## Warning in file.rename(from = fileToMove, to = paste0(&quot;output/&quot;,
+## fileToMove)): cannot rename file 'js' to 'output/js', reason 'Directory not
+## empty'</code></pre>
+<pre><code>## 
+## 
+##  FR</code></pre>
+<pre><code>## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;</code></pre>
+<pre><code>## Warning in file.rename(from = fileToMove, to = paste0(&quot;output/&quot;,
+## fileToMove)): cannot rename file 'js' to 'output/js', reason 'Directory not
+## empty'</code></pre>
+<pre><code>## 
+## 
+##  DE</code></pre>
+<pre><code>## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;</code></pre>
+<pre><code>## Warning in file.rename(from = fileToMove, to = paste0(&quot;output/&quot;,
+## fileToMove)): cannot rename file 'js' to 'output/js', reason 'Directory not
+## empty'</code></pre>
+<pre><code>## 
+## 
+##  IT</code></pre>
+<pre><code>## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;</code></pre>
+<pre><code>## Warning in file.rename(from = fileToMove, to = paste0(&quot;output/&quot;,
+## fileToMove)): cannot rename file 'js' to 'output/js', reason 'Directory not
+## empty'</code></pre>
+<pre><code>## 
+## 
+##  AR</code></pre>
+<pre><code>## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;</code></pre>
+<pre><code>## Warning in file.rename(from = fileToMove, to = paste0(&quot;output/&quot;,
+## fileToMove)): cannot rename file 'js' to 'output/js', reason 'Directory not
+## empty'</code></pre>
+<pre><code>## 
+## 
+##  RU</code></pre>
+<pre><code>## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;
+## Joining, by = &quot;BFSNR&quot;</code></pre>
+<pre><code>## Warning in file.rename(from = fileToMove, to = paste0(&quot;output/&quot;,
+## fileToMove)): cannot rename file 'js' to 'output/js', reason 'Directory not
+## empty'</code></pre>
+<pre><code>## 
+## 
+##  ZH</code></pre>
 <pre><code>## Joining, by = &quot;BFSNR&quot;
 ## Joining, by = &quot;BFSNR&quot;
 ## Joining, by = &quot;BFSNR&quot;

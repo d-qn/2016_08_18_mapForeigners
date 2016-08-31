@@ -134,7 +134,7 @@ data[which(data$nationality == "Kosovo"), c('continent', 'iso2')] <- c('Europe',
 ```{r sunburst plot}
 lang <- 'FR'
 
-for(lang in 'FR') {#colnames(txt)) {
+for(lang in colnames(txt)) {
   cat("\n", lang)
   df <- data
   
