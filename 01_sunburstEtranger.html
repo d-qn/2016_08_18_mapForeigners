@@ -196,9 +196,9 @@ if(length(cidx &gt; 0)) {
   warning(paste(colnames(txt)[cidx], collapse = &quot;\t&quot;), &quot; languages will be discarded!&quot;, &quot;\n&quot;)
   txt &lt;- txt[,-cidx, drop = F]
 }</code></pre>
-<pre><code>## Warning: PT  ES  JA languages will be discarded!</code></pre>
+<pre><code>## Warning: JA languages will be discarded!</code></pre>
 <pre class="r"><code>colnames(txt)</code></pre>
-<pre><code>## [1] &quot;EN&quot; &quot;FR&quot; &quot;DE&quot; &quot;IT&quot; &quot;AR&quot; &quot;RU&quot; &quot;ZH&quot;</code></pre>
+<pre><code>## [1] &quot;EN&quot; &quot;FR&quot; &quot;DE&quot; &quot;IT&quot; &quot;PT&quot; &quot;AR&quot; &quot;RU&quot; &quot;ES&quot; &quot;ZH&quot;</code></pre>
 <pre class="r"><code># load data
 if(loadPXdata) {
   px.read &lt;- read.px(&quot;data/px-x-0103010000_101.px&quot;)
@@ -385,6 +385,13 @@ for(lang in colnames(txt)) {
 ## Warning in file.create(to[okay]): cannot create file './output/js/
 ## sequences-0.1', reason 'Is a directory'</code></pre>
 <pre><code>## 
+##  PT</code></pre>
+<pre><code>## Warning in file.create(to[okay]): cannot create file './js/sequences-0.1',
+## reason 'Is a directory'
+
+## Warning in file.create(to[okay]): cannot create file './output/js/
+## sequences-0.1', reason 'Is a directory'</code></pre>
+<pre><code>## 
 ##  AR</code></pre>
 <pre><code>## Warning in file.create(to[okay]): cannot create file './js/sequences-0.1',
 ## reason 'Is a directory'
@@ -393,6 +400,13 @@ for(lang in colnames(txt)) {
 ## sequences-0.1', reason 'Is a directory'</code></pre>
 <pre><code>## 
 ##  RU</code></pre>
+<pre><code>## Warning in file.create(to[okay]): cannot create file './js/sequences-0.1',
+## reason 'Is a directory'
+
+## Warning in file.create(to[okay]): cannot create file './output/js/
+## sequences-0.1', reason 'Is a directory'</code></pre>
+<pre><code>## 
+##  ES</code></pre>
 <pre><code>## Warning in file.create(to[okay]): cannot create file './js/sequences-0.1',
 ## reason 'Is a directory'
 

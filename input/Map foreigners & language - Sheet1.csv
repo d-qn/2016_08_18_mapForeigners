@@ -1,28 +1,44 @@
 code,EN,FR,DE,IT,PT,AR,RU,ES,JA,ZH
-title1,Foreign population in Switzerland,Population étrangère en Suisse,Ausländische Wohnbevölkerung in der Schweiz,Popolazione straniera in Svizzera,,السكان الأجانب في سويسرا,Доля иностранцев среди постоянного населения Швейцарии,,,瑞士的外籍人口
-descr1,Municipalities coloured according to proportion of foreigners in 2015,Les communes sont colorées d'après la proportion d'étrangers en 2015. ,Gemeinden nach Ausländerquote 2015 eingefärbt,Il colore dei comuni indica la proporzione di stranieri nel 2015.,,تم تلوين البلديان حسب نسبة الأجانب المقيمين فيها عام 2015.,"Общины окрашены цветом, интенсивность которого соответствует доле населения с иностранными паспортами, по состоянию на 2015 г.",,,城镇按外国人比例着色
-for.tp,Foreigners,Etrangers,Ausländerinnen und Ausländer,Stranieri,,Foreigners,Иностранцы ,,,外籍人士
-pc.tp,Percentage points since 2010,point de pourcentage depuis 2010,Prozentpunkte seit 2010,Punti percentuali dal 2010,,Percentage points since 2010,Динамика начиная с 2010 года,,,2010年以来的百分比
-pop.tp,Population,Population,Bevölkerung,Popolazione,,Population,Население,,,人口  
-for.leg,% foreigners,% étrangers,% Ausländerinnen und Ausländer,% di stranieri,,% foreigners,% иностранцев,,,%外国人
+title1,Foreign population in Switzerland,Population étrangère en Suisse,Ausländische Wohnbevölkerung in der Schweiz,Popolazione straniera in Svizzera,População estrangeira na Suíça,السكان الأجانب في سويسرا,Доля иностранцев среди постоянного населения Швейцарии,Población extranjera en Suiza,,瑞士的外籍人口
+descr1,Municipalities coloured according to proportion of foreigners in 2015,Les communes sont colorées d'après la proportion d'étrangers en 2015. ,Gemeinden nach Ausländerquote 2015 eingefärbt,Il colore dei comuni indica la proporzione di stranieri nel 2015.,Os municípios estão coloridos de acordo com a proporção de estrangeiros em 2015.,تم تلوين البلديان حسب نسبة الأجانب المقيمين فيها عام 2015.,"Общины окрашены цветом, интенсивность которого соответствует доле населения с иностранными паспортами, по состоянию на 2015 г.","
+
+Los municipios están coloreados de acuerdo a la proporción de extranjeros
+en 2015
+",,城镇按外国人比例着色
+for.tp,Foreigners,Etrangers,Ausländerinnen und Ausländer,Stranieri,Estrangeiros,Foreigners,Иностранцы ,Extranjeros,,外籍人士
+pc.tp,Percentage points since 2010,point de pourcentage depuis 2010,Prozentpunkte seit 2010,Punti percentuali dal 2010,pontos percentuais desde 2010,Percentage points since 2010,Динамика начиная с 2010 года,"
+
+Puntos porcentuales desde 2010",,2010年以来的百分比
+pop.tp,Population,Population,Bevölkerung,Popolazione,População,Population,Население,"
+
+Población",,人口  
+for.leg,% foreigners,% étrangers,% Ausländerinnen und Ausländer,% di stranieri,% de estrangeiros,% foreigners,% иностранцев,% de extranjeros,,%外国人
 agglosize,Inhabitants (in thousands),Habitants (en milliers),Einwohner (in tausend),Abitanti (in migliaia),Habitantes (em milhares),Inhabitants (in thousands),Число жителей (тыс.),Habitantes (en miles),人口（単位：千人）,居民数(以千计)
 Zürich,Zurich,Zurich,Zürich,Zurigo,Zurique,Zurich,Цюрих,Zúrich,チューリヒ,苏黎世
 Bern,Bern,Berne,Bern,Berna,Berna,Bern,Берн,Berna,ベルン,伯尔尼
 Basel,Basel,Bâle,Basel,Basilea,Basileia,Basel,Базель,Basilea,バーゼル,巴塞尔
 Genève,Geneva,Genève,Genf,Ginevra,Genebra,Geneva,Женева,Ginebra,ジュネーブ,日内瓦
 Lausanne,Lausanne,Lausanne,Lausanne,Losanna,Lausanne,Lausanne,Лозанна,Lausana,ローザンヌ,洛桑
-title2,The four main foreign nationalities in Switzerland,Les 4 principales nationalités étrangères en Suisse,Die 4 wichtigsten ausländischen Nationalitäten in der Schweiz,Le 4 principali nazionalità straniere in Svizzera,,الجنسيات الأجنبية الرئيسية الأربع في سويسرا,Четыре ведущие по численности иностранные диаспоры в Швейцарии,,,瑞士四大外来人口国籍
-descr2,As a percentage of the permanent Swiss resident population in 2015 and by municipality. These four nationalities represent half (49%) of all foreigners in Switzerland,En pourcentage de la population résidente permanente en 2015 et par commune. Ces 4 nationalités représentent la moitié (49%) de tous les étrangers en Suisse. ,In Prozent der ständigen Wohnbevölkerung 2015 und nach Gemeinden. Diese 4 Nationalitäten machen die Hälfte (49%) aller Ausländerinnen und Ausländer in der Schweiz aus.,In percentuale della popolazione residente permanente nel 2015 e per comune. Queste 4 nazionalità rappresentano la metà (49%) di tutti gli stranieri in Svizzera,,بالنسبة المائوية من أصل السكان المقيمين بصفة دائمة عام 2015، حسب البلديات. تمثل هذه الجنسيات الأربع نصف (49%) جميع الأجانب في سويسرا.,В % от постоянного населения и по общинам в 2015 году. Эти четыре национальности составляют почти половину (49%) всего иностранного населения Швейцарии.,,,2015年在常住人口中的比例(按城镇计)。四大外籍人口比例几乎占所有瑞士外国人口的一半(49%)。
-it.nat,Italy,Italie,Italien,Italia,Itália,Italy,Италия,,意大利 ,意大利 
-de.nat,Germany,Allemagne,Deutschland,Germania,Alemanha,Germany,Германия,,德国,德国
-po.nat,Portugal,Portugal,Portugal,Portogallo,Portugal,Portugal,Португалия,,葡萄牙,葡萄牙
-fr.nat,France,France,Frankreich,Francia,França,France,Франция,,法国,法国
-title3,Linguistic regions of Switzerland,Régions linguistiques de Suisse,Sprachregionen der Schweiz,Regioni linguistiche della Svizzera,,المناطق اللغوية في سويسرا,Языковые регионы Швейцарии,,,瑞士语言区
-fr,French,Français,Französisch,Francese,,French,Французский,,,法语
-defr,German/French,Allemand Français,Deutsch/Französisch,Tedesco/Francese,,German/French,Немецкий/французский,,,德语/法语
-de,German,Allemand,Deutsch,Tedesco,,German,Немецкий,,,德语
-it,Italian,Italien,Italienisch,Italiano,,Italian,Итальянский,,,意大利语
-dero,German/Romansh,Allemand Romanche,Deutsch/Rätoromanisch,Tedesco/Romancio,,German/Romansh,Немецкий/ретороманский,,,德语/列托罗曼语
+title2,The four main foreign nationalities in Switzerland,Les 4 principales nationalités étrangères en Suisse,Die 4 wichtigsten ausländischen Nationalitäten in der Schweiz,Le 4 principali nazionalità straniere in Svizzera,As 4 principais nacionalidades estrangeiras na Suíça,الجنسيات الأجنبية الرئيسية الأربع في سويسرا,Четыре ведущие по численности иностранные диаспоры в Швейцарии,Las 4 principales nacionalidades extranjeras en Suiza,,瑞士四大外来人口国籍
+descr2,As a percentage of the permanent Swiss resident population in 2015 and by municipality. These four nationalities represent half (49%) of all foreigners in Switzerland,En pourcentage de la population résidente permanente en 2015 et par commune. Ces 4 nationalités représentent la moitié (49%) de tous les étrangers en Suisse. ,In Prozent der ständigen Wohnbevölkerung 2015 und nach Gemeinden. Diese 4 Nationalitäten machen die Hälfte (49%) aller Ausländerinnen und Ausländer in der Schweiz aus.,In percentuale della popolazione residente permanente nel 2015 e per comune. Queste 4 nazionalità rappresentano la metà (49%) di tutti gli stranieri in Svizzera,Como porcentagem da população residente em 2015 e por cidade. Estas quatro nacionalidades respondem por metade (49%) de todos os estrangeiros na Suíça.,بالنسبة المائوية من أصل السكان المقيمين بصفة دائمة عام 2015، حسب البلديات. تمثل هذه الجنسيات الأربع نصف (49%) جميع الأجانب في سويسرا.,В % от постоянного населения и по общинам в 2015 году. Эти четыре национальности составляют почти половину (49%) всего иностранного населения Швейцарии.,"Como porcentaje del total de la población extranjera residente en 2015 y
+por comunas. 
+
+Estas 4 nacionalidades representan la mitad (49%) de la población
+extranjera en Suiza.
+
+",,2015年在常住人口中的比例(按城镇计)。四大外籍人口比例几乎占所有瑞士外国人口的一半(49%)。
+it.nat,Italy,Italie,Italien,Italia,Itália,Italy,Италия,Italia ,意大利 ,意大利 
+de.nat,Germany,Allemagne,Deutschland,Germania,Alemanha,Germany,Германия,Alemania,德国,德国
+po.nat,Portugal,Portugal,Portugal,Portogallo,Portugal,Portugal,Португалия,Portugal,葡萄牙,葡萄牙
+fr.nat,France,France,Frankreich,Francia,França,France,Франция,Francia,法国,法国
+title3,Linguistic regions of Switzerland,Régions linguistiques de Suisse,Sprachregionen der Schweiz,Regioni linguistiche della Svizzera,Regiões linguísticas da Suíça,المناطق اللغوية في سويسرا,Языковые регионы Швейцарии,"
+
+Regiones lingüísticas de Suiza",,瑞士语言区
+fr,French,Français,Französisch,Francese,Francês,French,Французский,francés,,法语
+defr,German/French,Allemand Français,Deutsch/Französisch,Tedesco/Francese,Alemão/Francês,German/French,Немецкий/французский,alemán/francés,,德语/法语
+de,German,Allemand,Deutsch,Tedesco,Alemão,German,Немецкий,alemán,,德语
+it,Italian,Italien,Italienisch,Italiano,Italiano,Italian,Итальянский,italiano,,意大利语
+dero,German/Romansh,Allemand Romanche,Deutsch/Rätoromanisch,Tedesco/Romancio,Alemão/Romanche,German/Romansh,Немецкий/ретороманский,alemán/retoromanche,,德语/列托罗曼语
 source,Source,source,Quelle,Fonte,fonte,المصدر,Источник,Fuente,出典,来源
 source.name,Federal Statistical Office and swisstopo | swissinfo.ch,Office fédéral de la statistique et swisstopo  | swissinfo.ch ,Bundesamt für Statistik und swisstopo | swissinfo.ch ,Ufficio federale di statistica e swisstopo | swissinfo.ch ,Secretaria Federal de Estatísticas e Swisstopo | swissinfo.ch ,فليكر، المكتب الفدرالي للإحصاء، المكتب الفدرالي السويسري للطبوغرافيا swissinfo.ch I,Источник: Bundesamt für Statistik и swisstopo | swissinfo.ch ,Oficina Federal de Estadística y swisstopo | swissinfo.ch ,連邦統計局、swisstopo  | swissinfo.ch ,瑞士联邦统计局及swisstopo | 瑞士资讯swissinfo.ch 
 base.font,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,PingFang SC Semibold,PingFang SC Semibold
