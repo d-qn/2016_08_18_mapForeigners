@@ -184,13 +184,13 @@ for (lang in colnames(txt)) {
     geom_point(
       data = largeAgglo,
       aes(x = lon, y = lat, group = 1, size = pop),         
-      alpha = 0.6, colour = colourText_bkbg, shape = 1
+      alpha = 0.75, colour = colourText_bkbg, shape = 1
     ) + 
     scale_size(range = c(3,7), name = paste0(txt['agglosize', lang], &quot;  &quot;)) + 
     geom_text(
       data = largeAgglo,
       aes(x = lon, y = lat, group = 1, label = label),
-      alpha = 0.75,
+      alpha = 0.8,
       family = txt['base.font', lang],
       colour = colourText_bkbg,
       nudge_y = -0.082,
@@ -217,7 +217,8 @@ for (lang in colnames(txt)) {
   }))
   ddd &lt;- ddd[!is.na(ddd$value),]
   # get nationality translations
-  nat4 &lt;- structure(c(&quot;Italie&quot;, &quot;Allemagne&quot;, &quot;Portugal&quot;, &quot;France&quot;), names = txt[c(&quot;it.nat&quot;,&quot;de.nat&quot;,&quot;po.nat&quot;,&quot;fr.nat&quot;), lang])
+  nat4 &lt;- structure(c(&quot;Italie&quot;, &quot;Allemagne&quot;, &quot;Portugal&quot;, &quot;France&quot;), 
+                    names = txt[c(&quot;it.nat&quot;,&quot;de.nat&quot;,&quot;po.nat&quot;,&quot;fr.nat&quot;), lang])
   ddd$nationality &lt;- factor(names(nat4)[match(ddd$nationality, nat4)], levels= names(nat4))
   ddd$value &lt;- ddd$value * 100
   
