@@ -139,14 +139,15 @@ for(lang in colnames(txt)) {
   df <- data
   
   ## get translations country & continent
-  df$country <- countryTranslation(df$iso2, lang)[,-1]
   df[which(df$nationality == "unknown"), 'country'] <- txt['inconnu.country', lang]
   df[which(df$nationality == "Other countries"), 'country'] <- txt["autrespays.country", lang]
   df[which(df$nationality == "Kosovo"), 'country'] <- txt["Kosovo.country", lang]
+  idx <- which(is.na(df$country))
+  df[idx, 'country'] <- countryTranslation(unlist(df[idx, 'iso2']), lang)[,-1]
   stopifnot(!any(is.na(df$country)))
-  
+
   df$cont <- txt[paste0(df$continent,".continent"), lang]
-  df[which(df$nationality == "unknown"), 'cont'] <- txt['inconnu.continent', lang]
+  df[which(df$nationality == "unknown"), 'cont'] <- txt['inconnu.continent', lang]  
   stopifnot(!any(is.na(df$cont)), sum(df$value) == totForeigners)
   
   # create the sequence data

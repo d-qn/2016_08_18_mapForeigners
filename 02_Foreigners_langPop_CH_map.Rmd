@@ -194,7 +194,7 @@ for (lang in colnames(txt)) {
   
   imap <- ggiraph(
     code = {print(fmap)}, 
-    width = "100%", 
+    width = 1, 
     zoom_max = 3, 
     tooltip_extra_css = tooltip_css,
     fontname_sans = 'Open Sans Condensed'
