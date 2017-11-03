@@ -186,10 +186,9 @@ cidx &lt;- unique(which(txt ==&quot;&quot; | is.na(txt), T)[,2])
 if(length(cidx &gt; 0)) {
   warning(paste(colnames(txt)[cidx], collapse = &quot;\t&quot;), &quot; languages will be discarded!&quot;, &quot;\n&quot;)
   txt &lt;- txt[,-cidx, drop = F]
-}</code></pre>
-<pre><code>## Warning: JA languages will be discarded!</code></pre>
-<pre class="r"><code>colnames(txt)</code></pre>
-<pre><code>## [1] &quot;EN&quot; &quot;FR&quot; &quot;DE&quot; &quot;IT&quot; &quot;PT&quot; &quot;AR&quot; &quot;RU&quot; &quot;ES&quot; &quot;ZH&quot;</code></pre>
+}
+colnames(txt)</code></pre>
+<pre><code>##  [1] &quot;EN&quot; &quot;FR&quot; &quot;DE&quot; &quot;IT&quot; &quot;PT&quot; &quot;AR&quot; &quot;RU&quot; &quot;ES&quot; &quot;JA&quot; &quot;ZH&quot;</code></pre>
 <pre class="r"><code># load data
 if(loadPXdata) {
   px.read &lt;- read.px(&quot;data/px-x-0103010000_101.px&quot;)
@@ -358,6 +357,7 @@ for(lang in colnames(txt)) {
 ##  AR
 ##  RU
 ##  ES
+##  JA
 ##  ZH</code></pre>
 <div id="open-the-html-files-and-remove-this-code-find-replace" class="section level3">
 <h3>Open the HTML files and remove this code (find &amp; replace):</h3>

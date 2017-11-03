@@ -243,7 +243,11 @@ for (lang in colnames(txt)) {
     data = la.df,  aes(x = long, y = lat, group = group),
     size = 0, fill = border.color, colour = border.color) + 
   scale_fill_manual(name = "",
-    values = c('#ab3d3f', '#366096', '#3a9736', '#996699', '#ac673e'))
+    values = c('#ab3d3f', '#366096', '#3a9736', '#996699', '#ac673e')) + 
+  theme(
+    legend.key.width = unit(ifelse(lang == "JA", 9, 19), "lines"),
+    legend.text = element_text(colour = colourText_bkbg, size = ifelse(lang == "JA", 9, 11), hjust = 1)
+  )
 
   map.lang <- lmap <- lmap + geom_point(data = largeAgglo,
       aes(x = lon, y = lat, size = pop, group = 1),         
@@ -283,6 +287,12 @@ for (lang in colnames(txt)) {
         width = 1100 * 1.1, bg = '#1a0000')
     print(map.lang)
     dev.off()
+    
+    # require(svglite)
+    # map2.path <- paste0("output/map_lang_" , lang, ".svg")
+    # svglite(map2.path)
+    # print(map.lang)
+    # dev.off()
     
     footer <- paste0(txt['source', lang], ": ", txt['source.name', lang])
     
