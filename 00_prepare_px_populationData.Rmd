@@ -9,8 +9,6 @@ https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=fr&px_db=px-x-01020100
 
 ```{r settings, packages}
 population.file <- 'data/px-x-0102010000_104.px'
-nationalityFR.file <- 'data/px-x-0102010000_104_fr.csv'
-
 
 library(pxR)
 library(tidyr)
@@ -19,29 +17,49 @@ library(magrittr)
 ```
 
 ```{r load data, packages}
-natfr <- read.csv(nationalityFR.file, sep = "\t", col.names = F, 
-        encoding = "latin1", stringsAsFactors = F) %>% unlist(use.names = F)
-
 px.read <- read.px(population.file)
-data.read  <- as.data.frame( px.read )
-colnames(data.read) <- c('nationality', 'birthLocation', 
-                         'populationType', 'location', 'year', 'value')
 
-# translate nationlity in french
-nat <- levels(data.read$nationality)
-stopifnot(length(natfr) + 1 == length(nat))
-names(nat) <- c('Total', natfr)
+dd <- px.read$DATA[[1]]
 
-idx <- match(data.read$nationality, nat)
-data.read$nationality <- names(nat)[idx]
-data.read$year <- as.numeric(as.character(data.read$year))
+# get the French terms
+fr <- px.read$VALUES.fr.
+de <- px.read$VALUES
+
+colnames(dd)[-ncol(dd)] <- rev(names(fr))
+  
+## helper to translate PX file
+  translate <- function(colname = 'Result.variable', dd, fr, de) {
+    # find which colname idx
+    i <- which(names(fr) == colname)
+    # split single string to a string vector
+    translations <- unlist(strsplit(fr[[i]], '", ?"'))
+    stopifnot(length(translations) == length(de[[i]]))
+    
+    # match each term of the dd to the levels
+    idx <- match(dd[[colname]], de[[i]])
+    stopifnot(all(!is.na(idx)))
+    
+    factor(translations[idx])
+  }
+  # apply translation
+  for(coln in colnames(dd)[-ncol(dd)]) {
+    dd[,coln]<- translate(coln, dd, fr, de)
+  }
+dd %<>% mutate(Année = as.numeric(as.character(dd$Année)))
+dd %<>% rename(
+  nationality = Nationalité, 
+  birthLocation = `Lieu.de.naissance`,
+  populationType = `Type.de.population`, 
+  location = `Canton.......District........Commune.........`,
+  year = Année
+)
 
 # filter data
-df <- data.read %>% filter(
-  nationality != 'Total', 
-  birthLocation == "Geburtsort - Total",
-  populationType == "Ständige Wohnbevölkerung",
-  year %in% range(data.read$year)
+df <- dd %>% filter(
+  nationality != 'Nationalité - Total', 
+  birthLocation == "Lieu de naissance - Total",
+  populationType == "Population résidante permanente",
+  year %in% range(dd$year)
 ) %>% select(nationality, location, value, year)
 
 # get the cantons and fill NA
@@ -56,47 +74,21 @@ df$BFS_NUMMER <- as.numeric(gsub("^\\.\\.\\.\\.\\.\\.(\\d+) .*$", "\\1",as.chara
 df$location <- as.character(df$location)
 df$location <- gsub("^\\.\\.\\.\\.\\.\\.\\d+ ", "", df$location)
 
-#write.csv(df, "data/PopResidentePerma2015.csv", row.names = F)
 
-ddd <- df %>% group_by(location, BFS_NUMMER, year, canton) %>%
+ddd <- df %>% 
+  group_by(location, BFS_NUMMER, year, canton) %>%
   summarise(
     population   = sum(value),
     foreigners   = sum(value[nationality != "Suisse"]),
     pcForeigners = round(sum(foreigners) / population, 3)
   ) %>% ungroup()
 
-ddd_2010 <- ddd %>% filter(year == 2010) %>% select(-year)
-ddd %<>% filter(year == 2015) %>% select(-year)
-ddd$deltaForeigners <- ddd$pcForeigners - ddd_2010[match(ddd$BFS_NUMMER, ddd_2010$BFS_NUMMER), 'pcForeigners'] %>% unlist()
+ddd_2010 <- ddd %>% filter(year == min(df$year)) %>% select(-year)
+ddd %<>% filter(year == max(df$year)) %>% select(-year)
+ddd$deltaForeigners <- ddd$pcForeigners - ddd_2010[match(ddd$BFS_NUMMER, ddd_2010$BFS_NUMMER), 'pcForeigners'] %>% 
+  unlist()
 
-write.csv(ddd, "input/foreignersByMunicipality2015.csv", row.names = F)
-
-
-
-
-### Write the data.fram with the top 8 most frequent foreigner nationalites
-### by commune compute % foreigners and the variation in number of foreigners
-topN <- df %>% filter(year == max(df$year)) %>% 
-  group_by(nationality) %>% summarise(tot = sum(value)) %>% 
-  arrange(desc(tot)) %>% ungroup() %>% head(9) %>%
-  select(nationality) %>% unlist(use.names = F)
-topF <- topN[topN != "Suisse"]
-
-dn <- df %>% filter(year == max(df$year)) %>%
-  group_by(BFS_NUMMER, location) %>%
-  summarise(
-    populationTot = sum(value, na.rm = T),
-    Italie = sum(value[nationality == "Italie"]),
-    Allemagne = sum(value[nationality == "Allemagne"]),
-    Portugal = sum(value[nationality == "Portugal"]),
-    France = sum(value[nationality == "France"]),
-    Kosovo = sum(value[nationality == "Kosovo"]),
-    Espagne = sum(value[nationality == "Espagne"]),
-    Serbie = sum(value[nationality == "Serbie"]),
-    Turquie = sum(value[nationality == "Turquie"])
-  ) %>% ungroup()
-  
-write.csv(dn, "input/top8foreignersNationalityByMunicipality2015.csv", row.names = F)
+write.csv(ddd, "input/foreignersByMunicipality2016.csv", row.names = F)
 ```
 
 
