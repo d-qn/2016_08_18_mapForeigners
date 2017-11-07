@@ -229,6 +229,31 @@ ddd %&lt;&gt;% filter(year == max(df$year)) %&gt;% select(-year)
 ddd$deltaForeigners &lt;- ddd$pcForeigners - ddd_2010[match(ddd$BFS_NUMMER, ddd_2010$BFS_NUMMER), 'pcForeigners'] %&gt;% 
   unlist()
 
+
+### Write the data.fram with the top 8 most frequent foreigner nationalites
+### by commune compute % foreigners and the variation in number of foreigners
+topN &lt;- df %&gt;% filter(year == max(df$year)) %&gt;% 
+  group_by(nationality) %&gt;% summarise(tot = sum(value)) %&gt;% 
+  arrange(desc(tot)) %&gt;% ungroup() %&gt;% head(9) %&gt;%
+  select(nationality) %&gt;% unlist(use.names = F)
+topF &lt;- topN[topN != &quot;Suisse&quot;]
+
+dn &lt;- df %&gt;% filter(year == max(df$year)) %&gt;%
+  group_by(BFS_NUMMER, location) %&gt;%
+  summarise(
+    populationTot = sum(value, na.rm = T),
+    Italie = sum(value[nationality == &quot;Italie&quot;]),
+    Allemagne = sum(value[nationality == &quot;Allemagne&quot;]),
+    Portugal = sum(value[nationality == &quot;Portugal&quot;]),
+    France = sum(value[nationality == &quot;France&quot;]),
+    Kosovo = sum(value[nationality == &quot;Kosovo&quot;]),
+    Espagne = sum(value[nationality == &quot;Espagne&quot;]),
+    Serbie = sum(value[nationality == &quot;Serbie&quot;]),
+    Turquie = sum(value[nationality == &quot;Turquie&quot;])
+  ) %&gt;% ungroup()
+  
+write.csv(dn, &quot;input/top8foreignersNationalityByMunicipality2016.csv&quot;, row.names = F)
+
 write.csv(ddd, &quot;input/foreignersByMunicipality2016.csv&quot;, row.names = F)</code></pre>
 
 

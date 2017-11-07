@@ -23,9 +23,7 @@ n.threshold.merge <- 1000
 
 library(pxR)
 library(magrittr)
-library(dplyr)
-library(tidyr)
-library(readr)
+library(tidyverse)
 library(swiMap)
 library(countrycode)
 
@@ -35,13 +33,12 @@ library(swiTheme)
 library(swiRcharts)
 library(sunburstR)
 library(htmlwidgets)
-
 ```
 
 
 ```{r load data}
 # load translations
-txt <- read.csv("input/Sunburst CH foreigners 2015 - Sheet1.csv", row.names = 1, stringsAsFactors = F)
+txt <- read.csv("input/Sunburst CH foreigners 2016 - Sheet1.csv", row.names = 1, stringsAsFactors = F)
 
 # discard incomplete translations
 cidx <- unique(which(txt =="" | is.na(txt), T)[,2])
@@ -67,11 +64,11 @@ if(loadPXdata) {
     filter(Geschlecht == "Geschlecht - Total") %>%
     filter(Bevölkerungstyp == "Ständige Wohnbevölkerung") %>%
     filter(Kanton == "Schweiz") %>%
-    rename(nationality = `Staatsangehörigkeit..Land.`) %>%
+    rename(nationality = `Staatsangehörigkeit`) %>%
     select(nationality, value)
     
   # get the English nationality 
-  nationality <- gsub('\"', '', unlist(strsplit(en.metadata$`Citizenship..Country.`, ",")))
+  nationality <- gsub('\"', '', unlist(strsplit(en.metadata$Citizenship, ",")))
   # renomve leading blank space
   nationality <- gsub("^ ?", "", nationality)
   names(nationality) <- levels(data.read$nationality)
@@ -91,10 +88,10 @@ if(loadPXdata) {
 }
 ```
 
-```{r wrange & structure data}
+```{r wrangle & structure data}
 
 # Remove Suisses!
-data <- filter(data, data$nationality != "Switzerland")
+data <- filter(data, data$nationality != "Switzerland", value > 0) 
 totForeigners <- sum(data$value)
 
 ## replace unknow origin by "Inconu"
@@ -111,18 +108,24 @@ data$iso2 <- countrycode(data$nationality, "country.name", "iso2c")
 data$continent <- countrycode(data$iso2, "iso2c", "continent")
 # hack continent for Taiwnan
 data[which(data$iso2 == "TW"), 'continent'] <- "Asia"
-
+#data[which(is.na(data$continent)),]
 
 ## Aggregate unfrequent nationalites to "Other countries"
 #hist(data$value, breaks = 1000)
 data[data$value < n.threshold.merge, 'nationality'] %>% unlist(use.name = F) -> countries.sub
 
 # replace unfrequent country by "autres"
-data %<>% mutate(nationality = replace(nationality, nationality %in% countries.sub, "Other countries"))
+if(length(countries.sub) > 0) {
+  data %<>% mutate(nationality = replace(nationality, nationality %in% countries.sub, "Other countries"))  
+}
 
 # shape the data for plot, recompute total values
-data %<>% group_by(nationality, continent) %>% 
-  summarise(value = sum(value, na.rm = T)) %>% ungroup()
+data %<>% 
+  group_by(nationality, continent) %>% 
+  summarise(value = sum(value, na.rm = T)) %>% 
+  ungroup()
+
+
 stopifnot(sum(data$value) == totForeigners)
 data$iso2 <- countrycode(data$nationality, "country.name", "iso2c")
 
@@ -144,7 +147,8 @@ for(lang in colnames(txt)) {
   df[which(df$nationality == "Kosovo"), 'country'] <- txt["Kosovo.country", lang]
   idx <- which(is.na(df$country))
   df[idx, 'country'] <- countryTranslation(unlist(df[idx, 'iso2']), lang)[,-1]
-  stopifnot(!any(is.na(df$country)))
+  stopifnot(!any(is.na(df$country)))    
+  
 
   df$cont <- txt[paste0(df$continent,".continent"), lang]
   df[which(df$nationality == "unknown"), 'cont'] <- txt['inconnu.continent', lang]  
@@ -186,8 +190,7 @@ for(lang in colnames(txt)) {
       tags$head(HTML(paste0(header, collapse =""))),
       tags$body(
         h2(HTML(txt['title', lang])), 
-        div(class = "descr", HTML(paste0(txt['descr', lang], ' &nbsp; &nbsp; <img src="Interactive_icon.svg.png" width="20" align="top">'))),
-        #div(class = "descr", HTML(paste0(txt['descr', lang], "<br><br>","<i>", txt['descr2', lang], '</i>'))),
+        div(class = "descr", HTML(paste0(txt['descr', lang], ' &nbsp; &nbsp; <img src="https://interactive.swissinfo.ch/assets/Interactive_icon.svg.png" width="19" align="top">'))),
         div(class = "container", HTML(html.code[html.grabbed[['istart']]:html.grabbed[['iend']]])),
         div(id = "cite", HTML(footer)),
         HTML(iframeresizer)
@@ -196,7 +199,6 @@ for(lang in colnames(txt)) {
   # copy sunburst css
   swi_libWidget_overwrite()
   
-    
   # copy my special sunburst with no number abbreviations and no legend
   original <- list.files("js", "sunburst.js", full.names = T, recursive = T)
   file.copy( from = list.files(system.file("extdata", package="swiRcharts"),
